@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.net.Uri
+import android.util.Log
 import androidx.core.graphics.scale
 import kotlin.math.floor
 
@@ -17,7 +18,8 @@ object MergePicUtils {
     private const val MERGE_RESULT_WIDTH = 1080f
 
     // 先尝试竖图拼接，后续会有模板
-    fun merge(context: Context, paths: List<String>):Bitmap? {
+    fun merge(context: Context, paths: List<String>): Bitmap? {
+        val start = System.currentTimeMillis()
         if (paths.isNullOrEmpty()) {
             return null
         }
@@ -62,7 +64,8 @@ object MergePicUtils {
             currentHeight += it.height
             it.recycle()
         }
-       return finalBitmap
+        Log.d("=====", "total cost ${System.currentTimeMillis() - start} millis")
+        return finalBitmap
     }
 
     private fun getPowerOfTwoForSampleRatio(ratio: Float): Int {
