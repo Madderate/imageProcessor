@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.net.Uri
 import android.util.Log
 import androidx.core.graphics.scale
+import java.io.File
 import kotlin.math.floor
 
 /**
@@ -34,6 +35,9 @@ object MergePicUtils {
                     preModels.add(PreMergeModel(path, options.outWidth, options.outHeight))
                     close()
                 }
+            } else {
+                BitmapFactory.decodeFile(path, options)
+                preModels.add(PreMergeModel(path, options.outWidth, options.outHeight))
             }
         }
         val totalWidth = MERGE_RESULT_WIDTH.toInt()
@@ -54,6 +58,10 @@ object MergePicUtils {
                     close()
                     bitmapList.add(bitmap)
                 }
+            } else {
+                var bitmap = BitmapFactory.decodeFile(it.imagePath)
+                bitmap = bitmap.scale(it.width, it.height)
+                bitmapList.add(bitmap)
             }
         }
         val finalBitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888)
