@@ -43,7 +43,7 @@ class EditPicFragment : Fragment() {
                 )
             }
         }
-        editPicViewModel.imagePath.observe(viewLifecycleOwner, Observer {
+        editPicViewModel.imagePath.observe(viewLifecycleOwner, {
         })
         return root
     }
@@ -61,7 +61,9 @@ class EditPicFragment : Fragment() {
                                     val uri = getItemAt(i).uri
                                     bitmapPaths.add(uri.toString())
                                 }
-                                editPicViewModel.setEditImages(bitmapPaths)
+                                withContext(Dispatchers.Main){
+                                    editPicViewModel.setEditImages(bitmapPaths)
+                                }
                             }
                         }
                     }

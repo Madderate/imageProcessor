@@ -11,4 +11,5 @@
     <string name="edit_pic">图片编辑</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="choose_pics">选择图片</string>
+    <string name="dynamic_filter">动态滤镜</string>
 </resources>

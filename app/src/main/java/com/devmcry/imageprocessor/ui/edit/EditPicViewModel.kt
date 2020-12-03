@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 
 class EditPicViewModel : ViewModel() {
 
-    private val _imagesPath = MutableLiveData<MutableList<String>>()
+    private val _imagesPath = MutableLiveData<MutableList<String>>().apply {
+        value = mutableListOf()
+    }
     val imagePath: LiveData<List<String>> = Transformations.map(_imagesPath) { it.toList() }
 
     fun setEditImages(imagesList: List<String>) {

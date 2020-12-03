@@ -22,4 +22,10 @@
         android:name="com.devmcry.imageprocessor.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@id/nav_dynamic"
+        android:name="com.devmcry.imageprocessor.ui.dynamic.DynamicFilterFragment"
+        android:label="@string/dynamic_filter"
+        tools:layout="@layout/fragment_dynamic" />
 </navigation>
