@@ -46,8 +46,8 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer {
             if (value != null) {
                 mImageWidth = value.width
                 mImageHeight = value.height
-                // 把图片数据加载进GPU，生成对应的纹理id
                 adjustImageScaling()
+                // 把图片数据加载进GPU，生成对应的纹理id
                 mGLTextureId = value.loadTexture(mGLTextureId)
             }
             field = value
