@@ -42,8 +42,8 @@ const val NO_FILTER_FRAGMENT_SHADER = """
     """
 
 abstract class IOpenGLShader @JvmOverloads constructor(
-    protected val vertexShader: String = NO_FILTER_VERTEX_SHADER,
-    protected val fragmentShader: String = NO_FILTER_FRAGMENT_SHADER
+    private val vertexShader: String = NO_FILTER_VERTEX_SHADER,
+    private val fragmentShader: String = NO_FILTER_FRAGMENT_SHADER
 ) {
     protected val mRunOnDraw = mutableListOf<Runnable>()
     protected val mGLProgramId: Int by lazy { loadProgram(vertexShader, fragmentShader) }
@@ -60,5 +60,39 @@ abstract class IOpenGLShader @JvmOverloads constructor(
             GLES30.glGetAttribLocation(mGLProgramId, "inputTextureCoordinate") // 顶点着色器的纹理坐标
     }
 
-    abstract fun onDraw(textureId: Int, cubeBuffer: FloatBuffer, textureBuffer: FloatBuffer)
+    open fun draw(textureId: Int, cubeBuffer: FloatBuffer, textureBuffer: FloatBuffer) {}
+
+    fun onDraw(textureId: Int, cubeBuffer: FloatBuffer, textureBuffer: FloatBuffer) {
+        GLES30.glUseProgram(mGLProgramId)
+        // 顶点着色器的顶点坐标
+        cubeBuffer.position(0)
+        GLES30.glVertexAttribPointer(mGLAttrPosition, 2, GLES30.GL_FLOAT, false, 0, cubeBuffer)
+        GLES30.glEnableVertexAttribArray(mGLAttrPosition)
+        // 顶点着色器的纹理坐标
+        textureBuffer.position(0)
+        GLES30.glVertexAttribPointer(
+            mGLAttrTextureCoordinate,
+            2,
+            GLES30.GL_FLOAT,
+            false,
+            0,
+            textureBuffer
+        )
+        GLES30.glEnableVertexAttribArray(mGLAttrTextureCoordinate)
+        // 传入的图片纹理
+        if (textureId != NO_TEXTURE) {
+            GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId)
+            GLES30.glUniform1i(mGLUniformTexture, 0)
+        }
+
+        draw(textureId, cubeBuffer, textureBuffer)
+
+        // 绘制顶点 ，方式有顶点法和索引法
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4) // 顶点法，按照传入渲染管线的顶点顺序及采用的绘制方式将顶点组成图元进行绘制
+
+        GLES30.glDisableVertexAttribArray(mGLAttrPosition)
+        GLES30.glDisableVertexAttribArray(mGLAttrTextureCoordinate)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
+    }
 }

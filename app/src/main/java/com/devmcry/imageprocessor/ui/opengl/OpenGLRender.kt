@@ -2,7 +2,8 @@ package com.devmcry.imageprocessor.ui.opengl
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.SurfaceTexture
+import android.graphics.SurfaceTexture.OnFrameAvailableListener
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import androidx.core.content.res.ResourcesCompat
@@ -12,7 +13,6 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
-import kotlin.concurrent.thread
 import kotlin.math.min
 import kotlin.math.round
 
@@ -40,7 +40,8 @@ private val TEXTURE_NO_ROTATION = floatArrayOf(
     1.0f, 0.0f, // v4
 )
 
-class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer {
+class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer,
+    OnFrameAvailableListener {
     var mBitmap: Bitmap? = null
         set(value) {
             if (value != null) {
@@ -57,7 +58,10 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer {
     private var mImageHeight: Int = 0
     private var mOutputWidth: Int = 0
     private var mOutputHeight: Int = 0
-    private val mGlImageHandler by lazy { OpenGLImageShader() }
+    private val mGLImageHandler by lazy { OpenGLImageShader() }
+
+    private var mGLFilterTextureId: Int = 0 // 滤镜纹理 id
+    private val mGLDynamicFilterHandler by lazy { OpenGLDynamicFilterShader() }
 
     // 顶点数组缓冲器
     private val mGLCubeBuffer by lazy {
@@ -94,9 +98,14 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10?) {
+//        GLES30.glEnable(GLES30.GL_BLEND)
+//        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
+
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT or GLES30.GL_DEPTH_BUFFER_BIT)
         // 根据纹理id，顶点和纹理坐标数据绘制图片
-        mGlImageHandler.onDraw(mGLTextureId, mGLCubeBuffer, mGLTextureBuffer)
+        if (mGLTextureId != NO_TEXTURE) {
+            mGLImageHandler.onDraw(mGLTextureId, mGLCubeBuffer, mGLTextureBuffer)
+        }
     }
 
     private fun adjustImageScaling() {
@@ -121,5 +130,9 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer {
 
         mGLCubeBuffer.clear()
         mGLCubeBuffer.put(cube).position(0)
+    }
+
+    override fun onFrameAvailable(surfaceTexture: SurfaceTexture?) {
+        TODO("Not yet implemented")
     }
 }
