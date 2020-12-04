@@ -30,11 +30,6 @@ class MainActivity : AppCompatActivity() {
             .request(Manifest.permission.READ_EXTERNAL_STORAGE)
             .subscribe()
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -42,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_merge_pic, R.id.nav_edit_pic, R.id.nav_slideshow
+                R.id.nav_merge_pic, R.id.nav_edit_pic, R.id.nav_slideshow, R.id.nav_opengl
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_merge_pic">
+    app:startDestination="@+id/nav_opengl">
 
     <fragment
         android:id="@+id/nav_merge_pic"
@@ -28,4 +28,11 @@
         android:name="com.devmcry.imageprocessor.ui.dynamic.DynamicFilterFragment"
         android:label="@string/dynamic_filter"
         tools:layout="@layout/fragment_dynamic" />
+
+
+    <fragment
+        android:id="@id/nav_opengl"
+        android:name="com.devmcry.imageprocessor.ui.opengl.OpenGLFragment"
+        android:label="@string/opengl"
+        tools:layout="@layout/fragment_opengl" />
 </navigation>
