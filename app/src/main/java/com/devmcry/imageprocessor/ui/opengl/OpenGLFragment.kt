@@ -90,7 +90,7 @@ class OpenGLFragment : Fragment() {
             setEGLContextClientVersion(3)
             setRenderer(glRender)
             renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
-            updateGLSurfaceView(BitmapFactory.decodeFile("/storage/emulated/0/Download/wallhaven-lmkk2y.jpg"))
+//            updateGLSurfaceView(BitmapFactory.decodeFile("/storage/emulated/0/Download/wallhaven-lmkk2y.jpg"))
         }.onFailure {
             it.printStackTrace()
         }
