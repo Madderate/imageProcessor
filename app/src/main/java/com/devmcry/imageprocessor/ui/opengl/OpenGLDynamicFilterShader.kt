@@ -1,7 +1,5 @@
 package com.devmcry.imageprocessor.ui.opengl
 
-import java.nio.FloatBuffer
-
 /**
  *  @author : DevMcryYu
  *  @date : 2020/12/4 14:27
@@ -19,14 +17,15 @@ private val VERTEX_SHADER = """
     }
     
     """.trimIndent()
-private const val FRAGMENT_SHADER = "precision mediump float;\n" +
-        "varying highp vec2 vTextureCoord;\n" +
-        "varying highp vec2 vTextureCoord2;\n" +
-        "uniform lowp sampler2D sTexture;\n" +
-        "void main() {\n" +
-        "vec4 color1 = texture2D(sTexture, vTextureCoord);\n" +
-        "vec4 color2 = texture2D(sTexture, vTextureCoord2);\n" +
-        "gl_FragColor = vec4(color1.rgb, color2.r);\n" +
-        "}\n"
+private const val FRAGMENT_SHADER = """
+            precision mediump float;
+            varying highp vec2 vTextureCoord;
+            varying highp vec2 vTextureCoord2;
+            uniform lowp sampler2D sTexture;
+            void main() {
+            vec4 color1 = texture2D(sTexture, vTextureCoord);
+            vec4 color2 = texture2D(sTexture, vTextureCoord2);
+            gl_FragColor = vec4(color1.rgb, color2.r);
+            }"""
 
-class OpenGLDynamicFilterShader : IOpenGLShader(VERTEX_SHADER, FRAGMENT_SHADER)
+class OpenGLDynamicFilterShader : GlFilter(VERTEX_SHADER, FRAGMENT_SHADER)

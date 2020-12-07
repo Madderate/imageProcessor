@@ -64,4 +64,5 @@ dependencies {
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
     // ffmpeg
     implementation 'com.arthenica:mobile-ffmpeg-full-gpl:4.4.LTS'
+    implementation 'com.google.android.exoplayer:exoplayer:2.12.2'
 }

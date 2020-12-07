@@ -12,6 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.devmcry.imageprocessor.R
+import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
@@ -24,6 +28,7 @@ class OpenGLFragment : Fragment() {
     private lateinit var fab: FloatingActionButton
 
     private lateinit var glSurfaceView: GLSurfaceView
+    private lateinit var eplayerView: EPlayerView
     private lateinit var glRender: OpenGLRender
 
     companion object {
@@ -37,6 +42,7 @@ class OpenGLFragment : Fragment() {
     ): View? {
         root = inflater.inflate(R.layout.fragment_opengl, container, false)
         glSurfaceView = root.findViewById(R.id.surfaceView)
+        eplayerView = root.findViewById(R.id.eplayerView)
         fab = root.findViewById(R.id.fab)
         return root
     }
@@ -62,6 +68,23 @@ class OpenGLFragment : Fragment() {
     }
 
     private fun initOpenGL() {
+//        val videoRenderer = MovieRenderer()
+//        val afd  = context?.assets?.openFd("cover.mp4") ?: return
+//
+//        videoRenderer.mediaPlayer = MediaPlayer().apply {
+//            setDataSource(afd.fileDescriptor,afd.startOffset,afd.length)
+//            setOnCompletionListener {
+//                it.start()
+//            }
+//        }
+//        glSurfaceView.runCatching {
+//            setEGLContextClientVersion(3)
+//            setRenderer(videoRenderer)
+//            renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+//        }.onFailure {
+//            it.printStackTrace()
+//        }
+//
         glSurfaceView.runCatching {
             glRender = OpenGLRender(requireContext())
             setEGLContextClientVersion(3)
@@ -71,6 +94,19 @@ class OpenGLFragment : Fragment() {
         }.onFailure {
             it.printStackTrace()
         }
+        val videoSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
+            .createMediaSource(Uri.parse("asset:///cover1.mp4"))
+
+        // SimpleExoPlayer
+        val player = ExoPlayerFactory.newSimpleInstance(requireContext())
+        // Prepare the player with the source.
+        player.prepare(videoSource)
+        player.playWhenReady = true
+        player.repeatMode = Player.REPEAT_MODE_ALL
+        eplayerView.setSimpleExoPlayer(player)
+        eplayerView.setPlayerScaleType(PlayerScaleType.RESIZE_NONE)
+        eplayerView.setGlFilter(AlphaFrameFilter())
+        eplayerView.onResume()
     }
 
     private fun updateGLSurfaceView(bitmap: Bitmap) {
@@ -79,6 +115,7 @@ class OpenGLFragment : Fragment() {
                 val ratio = bitmap.width.toFloat() / bitmap.height
                 val height = (glSurfaceView.measuredWidth / ratio).toInt()
                 glSurfaceView.layoutParams.height = height
+                eplayerView.layoutParams.height = height
                 requestLayout()
                 queueEvent {
                     glRender.mBitmap = bitmap

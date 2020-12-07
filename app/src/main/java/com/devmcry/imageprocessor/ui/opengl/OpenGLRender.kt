@@ -82,10 +82,6 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer,
         GLES30.glClearColor(0f, 0f, 0f, 0f)
         GLES30.glDisable(GLES30.GL_DEPTH_TEST)
 
-        // 加载图片
-        mBitmap = ResourcesCompat.getDrawable(mContext.resources, R.color.black, mContext.theme)
-            ?.toBitmap(1, 1)
-
         mGLCubeBuffer.put(CUBE).position(0)
         mGLTextureBuffer.put(TEXTURE_NO_ROTATION).position(0)
     }
@@ -98,8 +94,8 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer,
     }
 
     override fun onDrawFrame(gl: GL10?) {
-//        GLES30.glEnable(GLES30.GL_BLEND)
-//        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
+        GLES30.glEnable(GLES30.GL_BLEND)
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
 
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT or GLES30.GL_DEPTH_BUFFER_BIT)
         // 根据纹理id，顶点和纹理坐标数据绘制图片
@@ -133,6 +129,5 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer,
     }
 
     override fun onFrameAvailable(surfaceTexture: SurfaceTexture?) {
-        TODO("Not yet implemented")
     }
 }

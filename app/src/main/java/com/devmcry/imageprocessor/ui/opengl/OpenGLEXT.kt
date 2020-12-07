@@ -2,7 +2,6 @@ package com.devmcry.imageprocessor.ui.opengl
 
 import android.graphics.Bitmap
 import android.hardware.Camera
-import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.GLUtils
 import android.util.Log
@@ -66,12 +65,12 @@ fun IntBuffer.loadTexture(size: Camera.Size, usedTextureId: Int) {
  */
 fun String.loadShader(iType: Int): Int {
     val compiled = IntArray(1)
-    val iShader = GLES20.glCreateShader(iType)
-    GLES20.glShaderSource(iShader, this)
-    GLES20.glCompileShader(iShader)
-    GLES20.glGetShaderiv(iShader, GLES20.GL_COMPILE_STATUS, compiled, 0)
+    val iShader = GLES30.glCreateShader(iType)
+    GLES30.glShaderSource(iShader, this)
+    GLES30.glCompileShader(iShader)
+    GLES30.glGetShaderiv(iShader, GLES30.GL_COMPILE_STATUS, compiled, 0)
     if (compiled[0] == 0) {
-        Log.d("Load Shader Failed", "Compilation${GLES20.glGetShaderInfoLog(iShader)}")
+        Log.d("Load Shader Failed", "Compilation${GLES30.glGetShaderInfoLog(iShader)}")
         return 0
     }
     return iShader
