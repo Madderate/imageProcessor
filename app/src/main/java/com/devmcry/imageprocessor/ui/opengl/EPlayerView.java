@@ -19,7 +19,6 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
     private SimpleExoPlayer player;
 
     private float videoAspect = 1f;
-    private PlayerScaleType playerScaleType = PlayerScaleType.RESIZE_FIT_WIDTH;
 
     public EPlayerView(Context context) {
         this(context, null);
@@ -54,36 +53,6 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
 
     public void setGlFilter(GlFilter glFilter) {
         renderer.setGlFilter(glFilter);
-    }
-
-    public void setPlayerScaleType(PlayerScaleType playerScaleType) {
-        this.playerScaleType = playerScaleType;
-        requestLayout();
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        int measuredWidth = getMeasuredWidth();
-        int measuredHeight = getMeasuredHeight();
-
-        int viewWidth = measuredWidth;
-        int viewHeight = measuredHeight;
-
-        switch (playerScaleType) {
-            case RESIZE_FIT_WIDTH:
-                viewHeight = (int) (measuredWidth / videoAspect);
-                break;
-            case RESIZE_FIT_HEIGHT:
-                viewWidth = (int) (measuredHeight * videoAspect);
-                break;
-        }
-
-        // Log.d(TAG, "onMeasure viewWidth = " + viewWidth + " viewHeight = " + viewHeight);
-
-        setMeasuredDimension(viewWidth, viewHeight);
-
     }
 
     @Override

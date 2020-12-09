@@ -96,7 +96,6 @@ class OpenGLFragment : Fragment() {
                 val ratio = bitmap.width.toFloat() / bitmap.height
                 val height = (glSurfaceView.measuredWidth / ratio).toInt()
                 glSurfaceView.layoutParams.height = height
-                eplayerView.layoutParams.height = height
                 requestLayout()
                 queueEvent {
                     glRender.mBitmap = bitmap

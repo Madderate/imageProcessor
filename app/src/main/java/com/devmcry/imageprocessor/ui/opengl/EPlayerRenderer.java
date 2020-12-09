@@ -44,7 +44,7 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
     private boolean isNewFilter;
     private final EPlayerView glPreview;
 
-    private float aspectRatio = 1f;
+    private float aspectRatio = 9/16f;
 
     private SimpleExoPlayer simpleExoPlayer;
 
@@ -118,13 +118,13 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
     @Override
     public void onSurfaceChanged(final int width, final int height) {
         Log.d(TAG, "onSurfaceChanged width = " + width + "  height = " + height);
-        filterFramebufferObject.setup(width, height);
-        previewFilter.setFrameSize(width, height);
+        filterFramebufferObject.setup(1080, 1920);
+        previewFilter.setFrameSize(1080, 1920);
         if (glFilter != null) {
-            glFilter.setFrameSize(width, height);
+            glFilter.setFrameSize(1080, 1920);
         }
 
-        aspectRatio = (float) width / height;
+        aspectRatio = (float) 1080 / 1920;
         Matrix.frustumM(ProjMatrix, 0, -aspectRatio, aspectRatio, -1, 1, 5, 7);
         Matrix.setIdentityM(MMatrix, 0);
     }

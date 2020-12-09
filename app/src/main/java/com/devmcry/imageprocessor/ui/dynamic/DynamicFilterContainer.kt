@@ -74,6 +74,7 @@ class DynamicFilterContainer @JvmOverloads constructor(
                 requestLayout()
                 queueEvent {
                     glRender.mBitmap = bitmap
+                    requestRender()
                 }
             }, 100)
         }
