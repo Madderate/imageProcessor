@@ -2,6 +2,11 @@ package com.devmcry.imageprocessor.ui.opengl;
 
 import android.opengl.GLES30;
 
+import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
+import static android.opengl.GLES20.GL_TEXTURE_MAG_FILTER;
+import static android.opengl.GLES20.GL_TEXTURE_MIN_FILTER;
+import static android.opengl.GLES20.GL_TEXTURE_WRAP_S;
+import static android.opengl.GLES20.GL_TEXTURE_WRAP_T;
 import static android.opengl.GLES30.GL_COLOR_ATTACHMENT0;
 import static android.opengl.GLES30.GL_DEPTH_ATTACHMENT;
 import static android.opengl.GLES30.GL_DEPTH_COMPONENT16;
@@ -83,7 +88,12 @@ public class EFramebufferObject {
             texName = args[0];
             GLES30.glBindTexture(GL_TEXTURE_2D, texName);
 
-            EglUtil.setupSampler(GL_TEXTURE_2D, GL_LINEAR, GL_NEAREST);
+            GLES30.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            GLES30.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            GLES30.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            GLES30.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
 
             GLES30.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
             GLES30.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texName, 0);

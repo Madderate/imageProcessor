@@ -77,7 +77,7 @@ class OpenGLFragment : Fragment() {
             it.printStackTrace()
         }
         val videoSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
-            .createMediaSource(Uri.parse("asset:///cover1.mp4"))
+            .createMediaSource(Uri.parse("asset:///cover7.mp4"))
 
         // SimpleExoPlayer
         val player = ExoPlayerFactory.newSimpleInstance(requireContext())
@@ -86,10 +86,13 @@ class OpenGLFragment : Fragment() {
         player.playWhenReady = true
         player.repeatMode = Player.REPEAT_MODE_ALL
         eplayerView.setSimpleExoPlayer(player)
+        // NO.1.2 set filter
         eplayerView.setGlFilter(AlphaFrameFilter())
         eplayerView.onResume()
     }
 
+
+    // 选完图片之后重新绘制
     private fun updateGLSurfaceView(bitmap: Bitmap) {
         glSurfaceView.runCatching {
             postDelayed({

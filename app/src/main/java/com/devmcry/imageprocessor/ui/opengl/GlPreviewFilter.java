@@ -62,8 +62,11 @@ public class GlPreviewFilter extends GlFilter {
         GLES30.glEnableVertexAttribArray(getHandle("aTextureCoord"));
         GLES30.glVertexAttribPointer(getHandle("aTextureCoord"), VERTICES_DATA_UV_SIZE, GL_FLOAT, false, VERTICES_DATA_STRIDE_BYTES, VERTICES_DATA_UV_OFFSET);
 
+        // NO.3.1 激活纹理单元
         GLES30.glActiveTexture(GL_TEXTURE0);
+        // NO.3.2 绑定纹理ID texName 到纹理单元
         GLES30.glBindTexture(texTarget, texName);
+        // NO.3.3 将激活的纹理单元传递到着色器
         GLES30.glUniform1i(getHandle(DEFAULT_UNIFORM_SAMPLER), 0);
 
         GLES30.glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

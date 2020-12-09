@@ -10,6 +10,11 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 
+import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
+import static android.opengl.GLES20.GL_TEXTURE_MAG_FILTER;
+import static android.opengl.GLES20.GL_TEXTURE_MIN_FILTER;
+import static android.opengl.GLES20.GL_TEXTURE_WRAP_S;
+import static android.opengl.GLES20.GL_TEXTURE_WRAP_T;
 import static android.opengl.GLES30.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES30.GL_LINEAR;
 import static android.opengl.GLES30.GL_MAX_TEXTURE_SIZE;
@@ -24,6 +29,7 @@ import static android.opengl.GLES30.glViewport;
 class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTexture.OnFrameAvailableListener {
 
     private static final String TAG =EPlayerRenderer.class.getSimpleName();
+
 
     private ESurfaceTexture previewTexture;
     private boolean updateSurface = false;
@@ -44,7 +50,7 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
     private boolean isNewFilter;
     private final EPlayerView glPreview;
 
-    private float aspectRatio = 9/16f;
+    private float textureRatio = 1080/1920f;
 
     private SimpleExoPlayer simpleExoPlayer;
 
@@ -72,21 +78,31 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
 
     @Override
     public void onSurfaceCreated(final EGLConfig config) {
+        // NO.2 初始化render
+        // NO.2.1 清屏
         GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GLES30.glClear(GL_COLOR_BUFFER_BIT);
 
         final int[] args = new int[1];
 
+        // NO.2.2 生成纹理，记录纹理ID
         GLES30.glGenTextures(args.length, args, 0);
         texName = args[0];
 
 
+        // previewTexture 仅仅提供了 onFrameAvailable 回调，不纳入主流程
         previewTexture = new ESurfaceTexture(texName);
         previewTexture.setOnFrameAvailableListener(this);
 
 
         GLES30.glBindTexture(previewTexture.getTextureTarget(), texName);
         // GL_TEXTURE_EXTERNAL_OES
-        EglUtil.setupSampler(previewTexture.getTextureTarget(), GL_LINEAR, GL_NEAREST);
+        GLES30.glTexParameterf(previewTexture.getTextureTarget(), GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GLES30.glTexParameterf(previewTexture.getTextureTarget(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        GLES30.glTexParameteri(previewTexture.getTextureTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        GLES30.glTexParameteri(previewTexture.getTextureTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
         GLES30.glBindTexture(GL_TEXTURE_2D, 0);
 
         filterFramebufferObject = new EFramebufferObject();
@@ -118,14 +134,16 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
     @Override
     public void onSurfaceChanged(final int width, final int height) {
         Log.d(TAG, "onSurfaceChanged width = " + width + "  height = " + height);
-        filterFramebufferObject.setup(1080, 1920);
-        previewFilter.setFrameSize(1080, 1920);
-        if (glFilter != null) {
-            glFilter.setFrameSize(1080, 1920);
-        }
+        filterFramebufferObject.setup(width, (int)(width/textureRatio) );
+//        previewFilter.setFrameSize(1080, 1920);
+//        if (glFilter != null) {
+//            glFilter.setFrameSize(1080, 1920);
+//        }
 
-        aspectRatio = (float) 1080 / 1920;
-        Matrix.frustumM(ProjMatrix, 0, -aspectRatio, aspectRatio, -1, 1, 5, 7);
+        float bottom = -textureRatio * height / width;
+        float top = 2 + bottom;
+
+        Matrix.orthoM(ProjMatrix, 0, -textureRatio, textureRatio, bottom,  top, 5, 7);
         Matrix.setIdentityM(MMatrix, 0);
     }
 
@@ -145,7 +163,7 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
         if (isNewFilter) {
             if (glFilter != null) {
                 glFilter.setup();
-                glFilter.setFrameSize(fbo.getWidth(), fbo.getHeight());
+//                glFilter.setFrameSize(fbo.getWidth(), fbo.getHeight());
             }
             isNewFilter = false;
         }
@@ -160,7 +178,7 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
         Matrix.multiplyMM(MVPMatrix, 0, VMatrix, 0, MMatrix, 0);
         Matrix.multiplyMM(MVPMatrix, 0, ProjMatrix, 0, MVPMatrix, 0);
 
-        previewFilter.draw(texName, MVPMatrix, STMatrix, aspectRatio);
+        previewFilter.draw(texName, MVPMatrix, STMatrix, textureRatio);
 
         if (glFilter != null) {
             fbo.enable();

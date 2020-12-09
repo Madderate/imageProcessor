@@ -2,13 +2,14 @@ package com.devmcry.imageprocessor.ui.opengl;
 
 import android.opengl.GLSurfaceView;
 import android.util.Log;
+import android.opengl.EGL14.*;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
-import static javax.microedition.khronos.egl.EGL10.EGL_NONE;
+import static android.opengl.EGL14.EGL_NONE;
 import static javax.microedition.khronos.egl.EGL10.EGL_NO_CONTEXT;
 
 /**

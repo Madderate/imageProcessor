@@ -87,9 +87,6 @@ public class GlFilter {
         vertexBufferName = EglUtil.createBuffer(VERTICES_DATA);
     }
 
-    public void setFrameSize(final int width, final int height) {
-    }
-
 
     public void release() {
         GLES30.glDeleteProgram(program);

@@ -44,7 +44,7 @@ class DynamicFilterContainer @JvmOverloads constructor(
         }
 
         val videoSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(context))
-            .createMediaSource(Uri.parse("asset:///cover3.mp4"))
+            .createMediaSource(Uri.parse("asset:///cover1.mp4"))
 
         // SimpleExoPlayer
         val player = ExoPlayerFactory.newSimpleInstance(context)

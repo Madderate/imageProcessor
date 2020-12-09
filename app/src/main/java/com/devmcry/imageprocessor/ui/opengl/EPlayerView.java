@@ -36,8 +36,8 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
         getHolder().setFormat(PixelFormat.RGBA_8888);
 
         renderer = new EPlayerRenderer(this);
+        // NO.1.1 set render
         setRenderer(renderer);
-
     }
 
     public EPlayerView setSimpleExoPlayer(SimpleExoPlayer player) {

@@ -41,7 +41,7 @@ abstract class EFrameBufferObjectRenderer implements GLSurfaceView.Renderer {
     @Override
     public final void onSurfaceChanged(final GL10 gl, final int width, final int height) {
         framebufferObject.setup(width, height);
-        normalShader.setFrameSize(width, height);
+//        normalShader.setFrameSize(width, height);
         onSurfaceChanged(width, height);
     }
 
