@@ -68,29 +68,11 @@ class OpenGLFragment : Fragment() {
     }
 
     private fun initOpenGL() {
-//        val videoRenderer = MovieRenderer()
-//        val afd  = context?.assets?.openFd("cover.mp4") ?: return
-//
-//        videoRenderer.mediaPlayer = MediaPlayer().apply {
-//            setDataSource(afd.fileDescriptor,afd.startOffset,afd.length)
-//            setOnCompletionListener {
-//                it.start()
-//            }
-//        }
-//        glSurfaceView.runCatching {
-//            setEGLContextClientVersion(3)
-//            setRenderer(videoRenderer)
-//            renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
-//        }.onFailure {
-//            it.printStackTrace()
-//        }
-//
         glSurfaceView.runCatching {
             glRender = OpenGLRender(requireContext())
             setEGLContextClientVersion(3)
             setRenderer(glRender)
             renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
-//            updateGLSurfaceView(BitmapFactory.decodeFile("/storage/emulated/0/Download/wallhaven-lmkk2y.jpg"))
         }.onFailure {
             it.printStackTrace()
         }
@@ -104,7 +86,6 @@ class OpenGLFragment : Fragment() {
         player.playWhenReady = true
         player.repeatMode = Player.REPEAT_MODE_ALL
         eplayerView.setSimpleExoPlayer(player)
-        eplayerView.setPlayerScaleType(PlayerScaleType.RESIZE_NONE)
         eplayerView.setGlFilter(AlphaFrameFilter())
         eplayerView.onResume()
     }
