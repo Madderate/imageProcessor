@@ -1,6 +1,8 @@
 package com.devmcry.imageprocessor.ui.opengl
 
+import android.opengl.GLES11Ext
 import android.opengl.GLES30
+import com.devmcry.imageprocessor.ui.opengl.util.EglUtil
 import java.nio.FloatBuffer
 
 /**
@@ -81,9 +83,7 @@ abstract class IOpenGLShader @JvmOverloads constructor(
         GLES30.glEnableVertexAttribArray(mGLAttrTextureCoordinate)
         // 传入的图片纹理
         if (textureId != NO_TEXTURE) {
-            GLES30.glActiveTexture(GLES30.GL_TEXTURE0)
-            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId)
-            GLES30.glUniform1i(mGLUniformTexture, 0)
+            EglUtil.activateTexture(GLES30.GL_TEXTURE_2D, textureId, 0, mGLUniformTexture)
         }
 
         draw(textureId, cubeBuffer, textureBuffer)

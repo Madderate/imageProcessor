@@ -98,14 +98,17 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         previewTexture.setOnFrameAvailableListener(this);
 
 
+        // external  target GL_TEXTURE_EXTERNAL_OES 为纹理单元目标类型
+        // NO.2.3 绑定 external 纹理
         GLES30.glBindTexture(previewTexture.getTextureTarget(), texName);
-        // GL_TEXTURE_EXTERNAL_OES
+        // NO.2.4 配置 external 纹理过滤模式和环绕方式
         GLES30.glTexParameterf(previewTexture.getTextureTarget(), GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         GLES30.glTexParameterf(previewTexture.getTextureTarget(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         GLES30.glTexParameteri(previewTexture.getTextureTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         GLES30.glTexParameteri(previewTexture.getTextureTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 
+        // NO.2.5 绑定 normal 纹理
         GLES30.glBindTexture(GL_TEXTURE_2D, 0);
 
         filterFramebufferObject = new EFramebufferObject();

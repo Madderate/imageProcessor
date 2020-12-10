@@ -2,7 +2,7 @@ package com.devmcry.imageprocessor.ui.opengl.renderer;
 
 import android.graphics.SurfaceTexture;
 
-import com.devmcry.imageprocessor.ui.opengl.filter.GlPreviewFilter;
+import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 
 
 /**
@@ -25,7 +25,7 @@ class ESurfaceTexture implements SurfaceTexture.OnFrameAvailableListener {
 
 
     int getTextureTarget() {
-        return GlPreviewFilter.GL_TEXTURE_EXTERNAL_OES;
+        return GL_TEXTURE_EXTERNAL_OES;
     }
 
     void updateTexImage() {

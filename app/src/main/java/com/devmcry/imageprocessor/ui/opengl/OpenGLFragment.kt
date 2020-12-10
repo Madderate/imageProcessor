@@ -89,9 +89,10 @@ class OpenGLFragment : Fragment() {
         player.repeatMode = Player.REPEAT_MODE_ALL
 
 
+        // NO.1.1 player init render
         eplayerView.initRenderer()
         eplayerView.setSimpleExoPlayer(player)
-        // NO.1.2 set filter
+        // NO.1.2 player set filter
         eplayerView.setGlFilter(AlphaFrameFilter())
         eplayerView.onResume()
     }
