@@ -1,10 +1,12 @@
 package com.devmcry.imageprocessor.ui.opengl;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
+import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter;
 import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
 import com.devmcry.imageprocessor.ui.opengl.renderer.EPlayerRenderer;
 import com.devmcry.imageprocessor.ui.opengl.util.EConfigChooser;
@@ -40,12 +42,13 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
         getHolder().setFormat(PixelFormat.RGBA_8888);
     }
 
-    public void initRenderer() {
+    public void initRenderer(Context context) {
         if (renderer == null) {
             renderer = new EPlayerRenderer(this);
         }
         setRenderer(renderer);
     }
+
 
 
     public EPlayerView setSimpleExoPlayer(SimpleExoPlayer player) {
@@ -59,8 +62,12 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
         return this;
     }
 
-    public void setGlFilter(GlFilter glFilter) {
-        renderer.setGlFilter(glFilter);
+    public void setAlphaFrameFilter(AlphaFrameFilter glFilter) {
+        renderer.setAlphaFrameFilter(glFilter);
+    }
+
+    public void setContentFilter(ContentFilter glFilter, Bitmap bitmap) {
+        renderer.setContentFilter(glFilter, bitmap);
     }
 
     @Override

@@ -53,7 +53,7 @@ class DynamicFilterContainer @JvmOverloads constructor(
         player.playWhenReady = true
         player.repeatMode = Player.REPEAT_MODE_ALL
         playerView.setSimpleExoPlayer(player)
-        playerView.setGlFilter(AlphaFrameFilter())
+        playerView.setAlphaFrameFilter(AlphaFrameFilter())
         playerView.onResume()
     }
 

@@ -90,10 +90,16 @@ class OpenGLFragment : Fragment() {
 
 
         // NO.1.1 player init render
-        eplayerView.initRenderer()
+        eplayerView.initRenderer(context)
         eplayerView.setSimpleExoPlayer(player)
         // NO.1.2 player set filter
-        eplayerView.setGlFilter(AlphaFrameFilter())
+        // TODO balibell
+        var bitmap: Bitmap = BitmapFactory.decodeResource(context?.resources, R.drawable.test)
+        eplayerView.setContentFilter(ContentFilter(), bitmap)
+        eplayerView.setAlphaFrameFilter(AlphaFrameFilter())
+
+
+
         eplayerView.onResume()
     }
 

@@ -5,6 +5,7 @@ import android.opengl.GLSurfaceView;
 
 import com.devmcry.imageprocessor.ui.opengl.util.EFramebufferObject;
 import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
+import com.devmcry.imageprocessor.ui.opengl.util.EglUtil;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -14,7 +15,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLES30.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES30.GL_DEPTH_BUFFER_BIT;
-import static android.opengl.GLES30.GL_FRAMEBUFFER;
 
 /**
  * Created by sudamasayuki on 2017/05/16.
@@ -60,7 +60,7 @@ abstract class EFrameBufferObjectRenderer implements GLSurfaceView.Renderer {
 
         onDrawFrame(framebufferObject);
 
-        GLES30.glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        EglUtil.INSTANCE.unbindFrameBuffer();
         GLES30.glViewport(0, 0, framebufferObject.getWidth(), framebufferObject.getHeight());
 
         GLES30.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

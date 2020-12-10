@@ -7,9 +7,11 @@ import android.opengl.GLException
 import android.opengl.GLUtils
 import android.util.Log
 import com.devmcry.imageprocessor.BuildConfig
+import com.devmcry.imageprocessor.ui.opengl.loadTexture
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+import com.devmcry.imageprocessor.ui.opengl.NO_TEXTURE
 
 /**
  * Created by sudamasayuki on 2017/05/16.
@@ -90,24 +92,39 @@ object EglUtil {
         GLES30.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
     }
 
-    fun loadTexture(img: Bitmap, usedTexId: Int, recycle: Boolean): Int {
-        val textures = IntArray(1)
-        if (usedTexId == NO_TEXTURE) {
+
+    fun loadTexture(img: Bitmap, usedTextureId: Int, textureType: Int=GLES30.GL_TEXTURE_2D, recycle: Boolean=false): Int {
+        val textures = intArrayOf(NO_TEXTURE)
+        if (usedTextureId == NO_TEXTURE) {
             GLES30.glGenTextures(1, textures, 0)
-            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textures[0])
-            GLES30.glTexParameterf(GLES30.GL_TEXTURE_2D,
-                    GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR.toFloat())
-            GLES30.glTexParameterf(GLES30.GL_TEXTURE_2D,
-                    GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR.toFloat())
-            GLES30.glTexParameterf(GLES30.GL_TEXTURE_2D,
-                    GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE.toFloat())
-            GLES30.glTexParameterf(GLES30.GL_TEXTURE_2D,
-                    GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE.toFloat())
-            GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, img, 0)
+            GLES30.glBindTexture(textureType, textures[0])
+            GLES30.glTexParameterf(
+                    textureType,
+                    GLES30.GL_TEXTURE_MAG_FILTER,
+                    GLES30.GL_LINEAR.toFloat()
+            )
+            GLES30.glTexParameterf(
+                    textureType,
+                    GLES30.GL_TEXTURE_MIN_FILTER,
+                    GLES30.GL_LINEAR.toFloat()
+            )
+            //纹理也有坐标系，称UV坐标，或者ST坐标
+            GLES30.glTexParameterf(
+                    textureType,
+                    GLES30.GL_TEXTURE_WRAP_S,
+                    GLES30.GL_REPEAT.toFloat()
+            ) // S轴的拉伸方式为重复，决定采样值的坐标超出图片范围时的采样方式
+            GLES30.glTexParameterf(
+                    textureType,
+                    GLES30.GL_TEXTURE_WRAP_T,
+                    GLES30.GL_REPEAT.toFloat()
+            ) // T轴的拉伸方式为重复
+
+            GLUtils.texImage2D(textureType, 0, img, 0)
         } else {
-            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, usedTexId)
-            GLUtils.texSubImage2D(GLES30.GL_TEXTURE_2D, 0, 0, 0, img)
-            textures[0] = usedTexId
+            GLES30.glBindTexture(textureType, usedTextureId)
+            GLUtils.texSubImage2D(textureType, 0, 0, 0, img)
+            textures[0] = usedTextureId
         }
         if (recycle) {
             img.recycle()
@@ -115,7 +132,7 @@ object EglUtil {
         return textures[0]
     }
 
-
+    // 激活指定纹理，draw 的时候调用
     fun activateTexture(type: Int, textureId: Int, index: Int, textureHandler: Int) {
         // 激活指定纹理单元
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0 + index)
@@ -128,5 +145,10 @@ object EglUtil {
         GLES30.glTexParameterf(type, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR.toFloat())
         GLES30.glTexParameteri(type, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE)
         GLES30.glTexParameteri(type, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE)
+    }
+
+    // 解绑 frameBuffer
+    fun unbindFrameBuffer() {
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0)
     }
 }

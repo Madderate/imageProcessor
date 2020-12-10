@@ -4,12 +4,14 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.graphics.SurfaceTexture.OnFrameAvailableListener
+import android.opengl.GLES30.GL_TEXTURE_2D
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import com.devmcry.imageprocessor.ui.opengl.NO_TEXTURE
 import com.devmcry.imageprocessor.ui.opengl.OpenGLDynamicFilterShader
 import com.devmcry.imageprocessor.ui.opengl.OpenGLImageShader
 import com.devmcry.imageprocessor.ui.opengl.loadTexture
+import com.devmcry.imageprocessor.ui.opengl.util.EglUtil
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.microedition.khronos.egl.EGLConfig
@@ -50,11 +52,13 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer,
                 mImageHeight = value.height
                 adjustImageScaling()
                 // 把图片数据加载进GPU，生成对应的纹理id
-                mGLTextureId = value.loadTexture(mGLTextureId)
+//                mGLTextureId = value.loadTexture(mGLTextureId)
+//                mGLTextureId = EglUtil.loadTexture(value, GL_TEXTURE_2D, mGLTextureId, false)
+                mGLTextureId = EglUtil.loadTexture(value,  NO_TEXTURE)
             }
             field = value
         }
-    private var mGLTextureId: Int = 0 // 纹理 id
+    private var mGLTextureId: Int = NO_TEXTURE // 纹理 id
     private var mImageWidth: Int = 0
     private var mImageHeight: Int = 0
     private var mOutputWidth: Int = 0

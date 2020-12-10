@@ -47,6 +47,7 @@ fun Bitmap.loadTexture(usedTextureId: Int, recycle: Boolean = false): Int {
     } else {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, usedTextureId)
         GLUtils.texSubImage2D(GLES30.GL_TEXTURE_2D, 0, 0, 0, this)
+        textures[0] = usedTextureId
     }
     if (recycle) {
         recycle()
