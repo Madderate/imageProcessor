@@ -1,7 +1,10 @@
-package com.devmcry.imageprocessor.ui.opengl;
+package com.devmcry.imageprocessor.ui.opengl.filter;
 
 import android.content.res.Resources;
 import android.opengl.GLES30;
+
+import com.devmcry.imageprocessor.ui.opengl.util.EFramebufferObject;
+import com.devmcry.imageprocessor.ui.opengl.util.EglUtil;
 
 import java.util.HashMap;
 

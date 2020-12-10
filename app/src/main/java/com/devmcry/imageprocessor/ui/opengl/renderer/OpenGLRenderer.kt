@@ -1,4 +1,4 @@
-package com.devmcry.imageprocessor.ui.opengl
+package com.devmcry.imageprocessor.ui.opengl.renderer
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,9 +6,10 @@ import android.graphics.SurfaceTexture
 import android.graphics.SurfaceTexture.OnFrameAvailableListener
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
-import com.devmcry.imageprocessor.R
+import com.devmcry.imageprocessor.ui.opengl.NO_TEXTURE
+import com.devmcry.imageprocessor.ui.opengl.OpenGLDynamicFilterShader
+import com.devmcry.imageprocessor.ui.opengl.OpenGLImageShader
+import com.devmcry.imageprocessor.ui.opengl.loadTexture
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.microedition.khronos.egl.EGLConfig

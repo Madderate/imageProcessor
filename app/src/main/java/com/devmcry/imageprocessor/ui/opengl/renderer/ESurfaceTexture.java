@@ -1,6 +1,8 @@
-package com.devmcry.imageprocessor.ui.opengl;
+package com.devmcry.imageprocessor.ui.opengl.renderer;
 
 import android.graphics.SurfaceTexture;
+
+import com.devmcry.imageprocessor.ui.opengl.filter.GlPreviewFilter;
 
 
 /**

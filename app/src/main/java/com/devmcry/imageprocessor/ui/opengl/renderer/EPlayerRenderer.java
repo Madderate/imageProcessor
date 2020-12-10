@@ -1,4 +1,4 @@
-package com.devmcry.imageprocessor.ui.opengl;
+package com.devmcry.imageprocessor.ui.opengl.renderer;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES30;
@@ -6,6 +6,10 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Surface;
 
+import com.devmcry.imageprocessor.ui.opengl.util.EFramebufferObject;
+import com.devmcry.imageprocessor.ui.opengl.EPlayerView;
+import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
+import com.devmcry.imageprocessor.ui.opengl.filter.GlPreviewFilter;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -26,7 +30,7 @@ import static android.opengl.GLES30.glViewport;
  * Created by sudamasayuki on 2017/05/16.
  */
 
-class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTexture.OnFrameAvailableListener {
+public class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTexture.OnFrameAvailableListener {
 
     private static final String TAG =EPlayerRenderer.class.getSimpleName();
 
@@ -47,20 +51,19 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
     private GlPreviewFilter previewFilter;
 
     private GlFilter glFilter;
-    private boolean isNewFilter;
     private final EPlayerView glPreview;
 
     private float textureRatio = 1080/1920f;
 
     private SimpleExoPlayer simpleExoPlayer;
 
-    EPlayerRenderer(EPlayerView glPreview) {
+    public EPlayerRenderer(EPlayerView glPreview) {
         super();
         Matrix.setIdentityM(STMatrix, 0);
         this.glPreview = glPreview;
     }
 
-    void setGlFilter(final GlFilter filter) {
+    public void setGlFilter(final GlFilter filter) {
         glPreview.queueEvent(new Runnable() {
             @Override
             public void run() {
@@ -70,7 +73,7 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
                     glFilter = null;
                 }
                 glFilter = filter;
-                isNewFilter = true;
+//                isNewFilter = true;
                 glPreview.requestRender();
             }
         });
@@ -124,7 +127,8 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
         }
 
         if (glFilter != null) {
-            isNewFilter = true;
+//            isNewFilter = true;
+            glFilter.setup();
         }
 
         GLES30.glGetIntegerv(GL_MAX_TEXTURE_SIZE, args, 0);
@@ -148,7 +152,7 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
     }
 
     @Override
-    public void onDrawFrame(final EFramebufferObject fbo) {
+    public void onDrawFrame(final EFramebufferObject bufferObject) {
         GLES30.glEnable(GLES30.GL_BLEND);
         GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -160,13 +164,13 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
             }
         }
 
-        if (isNewFilter) {
-            if (glFilter != null) {
-                glFilter.setup();
-//                glFilter.setFrameSize(fbo.getWidth(), fbo.getHeight());
-            }
-            isNewFilter = false;
-        }
+//        if (isNewFilter) {
+//            if (glFilter != null) {
+//                glFilter.setup();
+////                glFilter.setFrameSize(fbo.getWidth(), fbo.getHeight());
+//            }
+//            isNewFilter = false;
+//        }
 
         if (glFilter != null) {
             filterFramebufferObject.enable();
@@ -181,9 +185,9 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
         previewFilter.draw(texName, MVPMatrix, STMatrix, textureRatio);
 
         if (glFilter != null) {
-            fbo.enable();
+            bufferObject.enable();
             GLES30.glClear(GL_COLOR_BUFFER_BIT);
-            glFilter.draw(filterFramebufferObject.getTexName(), fbo);
+            glFilter.draw(filterFramebufferObject.getTexName(), bufferObject);
         }
     }
 
@@ -193,11 +197,11 @@ class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTextu
         glPreview.requestRender();
     }
 
-    void setSimpleExoPlayer(SimpleExoPlayer simpleExoPlayer) {
+    public void setSimpleExoPlayer(SimpleExoPlayer simpleExoPlayer) {
         this.simpleExoPlayer = simpleExoPlayer;
     }
 
-    void release() {
+    public void release() {
         if (glFilter != null) {
             glFilter.release();
         }

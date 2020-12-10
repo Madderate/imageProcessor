@@ -12,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.devmcry.imageprocessor.R
+import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter
+import com.devmcry.imageprocessor.ui.opengl.renderer.OpenGLRender
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -85,6 +87,9 @@ class OpenGLFragment : Fragment() {
         player.prepare(videoSource)
         player.playWhenReady = true
         player.repeatMode = Player.REPEAT_MODE_ALL
+
+
+        eplayerView.initRenderer()
         eplayerView.setSimpleExoPlayer(player)
         // NO.1.2 set filter
         eplayerView.setGlFilter(AlphaFrameFilter())

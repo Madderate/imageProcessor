@@ -1,4 +1,4 @@
-package com.devmcry.imageprocessor.ui.opengl;
+package com.devmcry.imageprocessor.ui.opengl.filter;
 
 public class AlphaFrameFilter extends GlFilter {
     private static final String VERTEX_SHADER =

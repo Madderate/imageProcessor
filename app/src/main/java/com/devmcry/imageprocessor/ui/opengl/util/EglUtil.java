@@ -1,4 +1,4 @@
-package com.devmcry.imageprocessor.ui.opengl;
+package com.devmcry.imageprocessor.ui.opengl.util;
 
 import android.graphics.Bitmap;
 import android.opengl.GLES30;

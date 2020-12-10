@@ -1,4 +1,4 @@
-package com.devmcry.imageprocessor.ui.opengl;
+package com.devmcry.imageprocessor.ui.opengl.util;
 
 import android.opengl.GLSurfaceView;
 import android.os.Build;

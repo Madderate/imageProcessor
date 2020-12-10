@@ -1,5 +1,7 @@
 package com.devmcry.imageprocessor.ui.opengl
 
+import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter
+
 /**
  *  @author : DevMcryYu
  *  @date : 2020/12/4 14:27

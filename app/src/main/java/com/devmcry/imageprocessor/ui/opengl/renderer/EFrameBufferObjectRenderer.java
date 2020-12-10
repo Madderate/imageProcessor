@@ -1,7 +1,10 @@
-package com.devmcry.imageprocessor.ui.opengl;
+package com.devmcry.imageprocessor.ui.opengl.renderer;
 
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
+
+import com.devmcry.imageprocessor.ui.opengl.util.EFramebufferObject;
+import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
 
 import java.util.LinkedList;
 import java.util.Queue;

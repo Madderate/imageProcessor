@@ -5,6 +5,10 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
+import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
+import com.devmcry.imageprocessor.ui.opengl.renderer.EPlayerRenderer;
+import com.devmcry.imageprocessor.ui.opengl.util.EConfigChooser;
+import com.devmcry.imageprocessor.ui.opengl.util.EContextFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.video.VideoListener;
 
@@ -15,7 +19,7 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
 
     private final static String TAG = EPlayerView.class.getSimpleName();
 
-    private final EPlayerRenderer renderer;
+    private EPlayerRenderer renderer;
     private SimpleExoPlayer player;
 
     private float videoAspect = 1f;
@@ -34,11 +38,15 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
         setZOrderMediaOverlay(true);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         getHolder().setFormat(PixelFormat.RGBA_8888);
+    }
 
-        renderer = new EPlayerRenderer(this);
-        // NO.1.1 set render
+    public void initRenderer() {
+        if (renderer == null) {
+            renderer = new EPlayerRenderer(this);
+        }
         setRenderer(renderer);
     }
+
 
     public EPlayerView setSimpleExoPlayer(SimpleExoPlayer player) {
         if (this.player != null) {

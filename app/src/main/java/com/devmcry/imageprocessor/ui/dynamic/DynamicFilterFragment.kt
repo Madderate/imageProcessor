@@ -3,21 +3,13 @@ package com.devmcry.imageprocessor.ui.dynamic
 import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.net.Uri
-import android.opengl.GLSurfaceView
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL
-import com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS
-import com.arthenica.mobileffmpeg.FFmpeg
 import com.devmcry.imageprocessor.R
-import com.devmcry.imageprocessor.ui.opengl.OpenGLFragment
-import com.devmcry.imageprocessor.ui.opengl.OpenGLRender
 
 /**
  *  @author : DevMcryYu

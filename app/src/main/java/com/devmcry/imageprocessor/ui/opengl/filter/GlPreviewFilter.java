@@ -1,6 +1,8 @@
-package com.devmcry.imageprocessor.ui.opengl;
+package com.devmcry.imageprocessor.ui.opengl.filter;
 
 import android.opengl.GLES30;
+
+import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
 
 import static android.opengl.GLES30.GL_ARRAY_BUFFER;
 import static android.opengl.GLES30.GL_FLOAT;
