@@ -159,4 +159,24 @@ public class GlFilter {
         return location;
     }
 
+
+    // 针对图片进行坐标转换
+    static public float[] adjustImageScaling(float[] data, int imageWidth, int imageHeight, int outputWidth, int outputHeight) {
+        // 必须符合 VERTICES_DATA 结构
+        if (data.length != VERTICES_DATA.length) {
+            return data;
+        }
+        float ratioMax = Math.min(outputWidth * 1f / imageWidth, outputHeight * 1f / imageHeight);
+        int imageWidthNew = Math.round(imageWidth * ratioMax);
+        int imageHeightNew = Math.round(imageHeight * ratioMax);
+        float ratioWidth = outputWidth / imageWidthNew;
+        float ratioHeight = outputHeight / imageHeightNew;
+
+        return new float[] {
+                data[0]/ratioWidth, data[1]/ratioHeight, data[2], data[3], data[4],
+                data[5]/ratioWidth, data[6]/ratioHeight, data[7], data[8], data[9],
+                data[10]/ratioWidth, data[11]/ratioHeight, data[12], data[13], data[14],
+                data[15]/ratioWidth, data[16]/ratioHeight, data[17], data[18], data[19]
+        };
+    }
 }

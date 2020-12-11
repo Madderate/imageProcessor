@@ -7,9 +7,10 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Surface;
 
-import com.devmcry.imageprocessor.ui.opengl.ContentFilter;
+import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter;
 import com.devmcry.imageprocessor.ui.opengl.EPlayerView;
 import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter;
+import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
 import com.devmcry.imageprocessor.ui.opengl.filter.GlPreviewFilter;
 import com.devmcry.imageprocessor.ui.opengl.util.EFramebufferObject;
 import com.devmcry.imageprocessor.ui.opengl.util.EglUtil;
@@ -171,33 +172,28 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         }
 
 
-
-        if (contentFilter != null && contentBufferObject != null && contentBitmap != null) {
-            int textureId = EglUtil.INSTANCE.loadTexture(contentBitmap, NO_TEXTURE, GLES30.GL_TEXTURE_2D, false);
-            contentFilter.setContentTextureId(textureId);
-            contentFilter.setup();
-        }
-
-        if (alphaFrameFilter != null && alphaFrameBufferObject != null) {
-            alphaFrameFilter.setup();
-        }
-
         GLES30.glGetIntegerv(GL_MAX_TEXTURE_SIZE, args, 0);
 
     }
+
 
     @Override
     public void onSurfaceChanged(final int width, final int height) {
         Log.d(TAG, "onSurfaceChanged width = " + width + "  height = " + height);
 
-        if (contentFilter != null && contentBufferObject != null) {
+        if (contentFilter != null && contentBufferObject != null && contentBitmap != null) {
+            int textureId = EglUtil.INSTANCE.loadTexture(contentBitmap, NO_TEXTURE, GLES30.GL_TEXTURE_2D, false);
+
+            float[] cubeData = GlFilter.adjustImageScaling(ContentFilter.Companion.getCUBE_DATA(), contentBitmap.getWidth(), contentBitmap.getHeight(), width, height);
+            contentFilter.setup(cubeData);
+            contentFilter.setContentTextureId(textureId);
             contentBufferObject.setup(width, height);
         }
 
         if (alphaFrameFilter != null && alphaFrameBufferObject != null) {
+            alphaFrameFilter.setup();
             alphaFrameBufferObject.setup(width, (int)(width/textureRatio) );
         }
-
 
 
         float bottom = -textureRatio * height / width;
@@ -232,9 +228,6 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         Matrix.multiplyMM(MVPMatrix, 0, ProjMatrix, 0, MVPMatrix, 0);
 
         previewFilter.draw(previewTextureId, MVPMatrix, STMatrix, textureRatio);
-
-
-
 
 
 

@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter;
+import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter;
 import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
 import com.devmcry.imageprocessor.ui.opengl.renderer.EPlayerRenderer;
 import com.devmcry.imageprocessor.ui.opengl.util.EConfigChooser;

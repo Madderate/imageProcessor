@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.devmcry.imageprocessor.R
 import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter
+import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter
 import com.devmcry.imageprocessor.ui.opengl.renderer.OpenGLRender
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
@@ -95,6 +96,12 @@ class OpenGLFragment : Fragment() {
         // NO.1.2 player set filter
         // TODO balibell
         var bitmap: Bitmap = BitmapFactory.decodeResource(context?.resources, R.drawable.test)
+
+        val ratio = bitmap.width.toFloat() / bitmap.height
+        val height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
+        eplayerView.layoutParams.height = height
+        eplayerView.requestLayout()
+
         eplayerView.setContentFilter(ContentFilter(), bitmap)
         eplayerView.setAlphaFrameFilter(AlphaFrameFilter())
 
