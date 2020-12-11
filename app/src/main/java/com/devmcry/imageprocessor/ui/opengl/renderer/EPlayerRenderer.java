@@ -221,14 +221,6 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             }
         }
 
-//        if (isNewFilter) {
-//            if (glFilter != null) {
-//                glFilter.setup();
-////                glFilter.setFrameSize(fbo.getWidth(), fbo.getHeight());
-//            }
-//            isNewFilter = false;
-//        }
-
         if (alphaFrameFilter != null && alphaFrameBufferObject != null) {
             alphaFrameBufferObject.enable();
             glViewport(0, 0, alphaFrameBufferObject.getWidth(), alphaFrameBufferObject.getHeight());
@@ -244,11 +236,7 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
 
 
 
-//        if (contentFilter != null && contentBufferObject != null) {
-//            bufferObject.enable();
-//            GLES30.glClear(GL_COLOR_BUFFER_BIT);
-//            contentFilter.draw(contentFilter.getContentTextureId(), alphaFrameBufferObject);
-//        }
+
 
         if (alphaFrameFilter != null && alphaFrameBufferObject != null) {
             bufferObject.enable();
@@ -256,7 +244,13 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             alphaFrameFilter.draw(alphaFrameBufferObject.getTexName(), alphaFrameBufferObject);
         }
 
+        if (contentFilter != null && contentBufferObject != null) {
+            bufferObject.enable();
+            GLES30.glClear(GL_COLOR_BUFFER_BIT);
+            contentFilter.draw(contentFilter.getContentTextureId(), alphaFrameBufferObject);
+        }
     }
+
 
     @Override
     public synchronized void onFrameAvailable(final SurfaceTexture previewTexture) {

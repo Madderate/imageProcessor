@@ -51,6 +51,8 @@ public class GlFilter {
     };
 
 
+
+
     private static final int FLOAT_SIZE_BYTES = 4;
     protected static final int VERTICES_DATA_POS_SIZE = 3;
     protected static final int VERTICES_DATA_UV_SIZE = 2;
@@ -60,6 +62,7 @@ public class GlFilter {
 
     private final String vertexShaderSource;
     private final String fragmentShaderSource;
+    protected float[] verticeFragmentData = VERTICES_DATA;
 
     private int program;
 
@@ -88,7 +91,7 @@ public class GlFilter {
         vertexShader = EglUtil.INSTANCE.loadShader(vertexShaderSource, GL_VERTEX_SHADER);
         fragmentShader = EglUtil.INSTANCE.loadShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
         program = EglUtil.INSTANCE.createProgram(vertexShader, fragmentShader);
-        vertexBufferName = EglUtil.INSTANCE.createBuffer(VERTICES_DATA);
+        vertexBufferName = EglUtil.INSTANCE.createBuffer(verticeFragmentData);
     }
 
 
