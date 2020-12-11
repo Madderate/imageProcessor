@@ -63,7 +63,7 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer,
     private var mImageHeight: Int = 0
     private var mOutputWidth: Int = 0
     private var mOutputHeight: Int = 0
-    private val mGLImageHandler by lazy { OpenGLImageShader() }
+    private val mGLImageShader by lazy { OpenGLImageShader() }
 
     private var mGLFilterTextureId: Int = 0 // 滤镜纹理 id
     private val mGLDynamicFilterHandler by lazy { OpenGLDynamicFilterShader() }
@@ -105,7 +105,7 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer,
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT or GLES30.GL_DEPTH_BUFFER_BIT)
         // 根据纹理id，顶点和纹理坐标数据绘制图片
         if (mGLTextureId != NO_TEXTURE) {
-            mGLImageHandler.onDraw(mGLTextureId, mGLCubeBuffer, mGLTextureBuffer)
+            mGLImageShader.onDraw(mGLTextureId, mGLCubeBuffer, mGLTextureBuffer)
         }
     }
 

@@ -242,11 +242,6 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         previewFilter.draw(previewTextureId, MVPMatrix, STMatrix, textureRatio);
 
 
-        if (alphaFrameFilter != null && alphaFrameBufferObject != null) {
-            bufferObject.enable();
-            GLES30.glClear(GL_COLOR_BUFFER_BIT);
-            alphaFrameFilter.draw(alphaFrameBufferObject.getTexName(), alphaFrameBufferObject);
-        }
 
 
 //        if (contentFilter != null && contentBufferObject != null) {
@@ -254,6 +249,12 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
 //            GLES30.glClear(GL_COLOR_BUFFER_BIT);
 //            contentFilter.draw(contentFilter.getContentTextureId(), alphaFrameBufferObject);
 //        }
+
+        if (alphaFrameFilter != null && alphaFrameBufferObject != null) {
+            bufferObject.enable();
+            GLES30.glClear(GL_COLOR_BUFFER_BIT);
+            alphaFrameFilter.draw(alphaFrameBufferObject.getTexName(), alphaFrameBufferObject);
+        }
 
     }
 

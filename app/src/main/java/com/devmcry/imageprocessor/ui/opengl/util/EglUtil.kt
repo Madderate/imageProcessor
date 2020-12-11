@@ -7,11 +7,9 @@ import android.opengl.GLException
 import android.opengl.GLUtils
 import android.util.Log
 import com.devmcry.imageprocessor.BuildConfig
-import com.devmcry.imageprocessor.ui.opengl.loadTexture
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
-import com.devmcry.imageprocessor.ui.opengl.NO_TEXTURE
 
 /**
  * Created by sudamasayuki on 2017/05/16.
@@ -35,7 +33,7 @@ object EglUtil {
 
     @Throws(GLException::class)
     fun createProgram(vertexShader: Int, pixelShader: Int): Int {
-        val program = GLES20.glCreateProgram()
+        val program = GLES30.glCreateProgram()
         if (program == 0) {
             throw RuntimeException("Could not create program")
         }
@@ -43,8 +41,8 @@ object EglUtil {
         GLES30.glAttachShader(program, pixelShader)
         GLES30.glLinkProgram(program)
         val linkStatus = IntArray(1)
-        GLES30.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0)
-        if (linkStatus[0] != GLES20.GL_TRUE) {
+        GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, linkStatus, 0)
+        if (linkStatus[0] != GLES30.GL_TRUE) {
             GLES30.glDeleteProgram(program)
             throw RuntimeException("Could not link program")
         }
@@ -60,10 +58,10 @@ object EglUtil {
     }
 
     fun setupSampler(target: Int, mag: Int, min: Int) {
-        GLES30.glTexParameterf(target, GLES20.GL_TEXTURE_MAG_FILTER, mag.toFloat())
-        GLES30.glTexParameterf(target, GLES20.GL_TEXTURE_MIN_FILTER, min.toFloat())
-        GLES30.glTexParameteri(target, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
-        GLES30.glTexParameteri(target, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
+        GLES30.glTexParameterf(target, GLES30.GL_TEXTURE_MAG_FILTER, mag.toFloat())
+        GLES30.glTexParameterf(target, GLES30.GL_TEXTURE_MIN_FILTER, min.toFloat())
+        GLES30.glTexParameteri(target, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE)
+        GLES30.glTexParameteri(target, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE)
     }
 
     fun createBuffer(data: FloatArray): Int {
@@ -87,9 +85,9 @@ object EglUtil {
     }
 
     fun updateBufferData(bufferName: Int, data: FloatBuffer) {
-        GLES30.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferName)
-        GLES30.glBufferData(GLES20.GL_ARRAY_BUFFER, data.capacity() * FLOAT_SIZE_BYTES, data, GLES20.GL_STATIC_DRAW)
-        GLES30.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, bufferName)
+        GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, data.capacity() * FLOAT_SIZE_BYTES, data, GLES30.GL_STATIC_DRAW)
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, 0)
     }
 
 
@@ -147,8 +145,74 @@ object EglUtil {
         GLES30.glTexParameteri(type, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE)
     }
 
+
+    fun createTexture(args: IntArray): Int {
+        // 生成纹理
+        GLES30.glGenTextures(args.size, args, 0)
+        return args[0]
+    }
+
+    fun createFBOTexture(args: IntArray, width: Int, height: Int): Int {
+        GLES30.glGenTextures(args.size, args, 0)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, args[0])
+        GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGBA, width, height,
+                0, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, null)
+        GLES30.glTexParameterf(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST.toFloat())
+        GLES30.glTexParameterf(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR.toFloat())
+        GLES30.glTexParameterf(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE.toFloat())
+        GLES30.glTexParameterf(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE.toFloat())
+        GLES30.glBindTexture(GLES20.GL_TEXTURE_2D,0)
+        return args[0]
+    }
+
     // 解绑 frameBuffer
     fun unbindFrameBuffer() {
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0)
+    }
+
+    fun createFrameBuffer(args: IntArray): Int {
+        GLES30.glGenFramebuffers(args.size, args, 0)
+        return args[0]
+    }
+
+    fun createRenderBuffer(args: IntArray): Int {
+        GLES30.glGenRenderbuffers(args.size, args, 0)
+        return args[0]
+    }
+
+
+    // frameBuffer texture renderBuffer bind together
+    fun bindFBO(fb: Int, textureId: Int) {
+        bindFBO(fb, textureId, GLES30.GL_NONE)
+    }
+    fun bindFBO(fb: Int, textureId: Int, rb: Int, width: Int=0, height: Int=0) {
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, fb)
+        GLES30.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES30.GL_COLOR_ATTACHMENT0,
+                GLES30.GL_TEXTURE_2D, textureId, 0)
+
+        if (rb != GLES30.GL_NONE) {
+            GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, rb)
+            GLES30.glRenderbufferStorage(GLES30.GL_RENDERBUFFER, GLES30.GL_DEPTH_COMPONENT16, width, height)
+            GLES30.glFramebufferRenderbuffer(GLES30.GL_FRAMEBUFFER, GLES30.GL_DEPTH_ATTACHMENT, GLES30.GL_RENDERBUFFER, rb)
+        }
+    }
+
+    fun unbindFBO() {
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, GLES30.GL_NONE)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
+        GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, GLES30.GL_NONE)
+    }
+
+    fun deleteFBO(frame: IntArray, textures:IntArray) {
+//        GLES30.glDeleteRenderbuffers(1, fRender, 0)
+        // 删除Frame Buffer
+        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, GLES30.GL_NONE)
+        GLES30.glDeleteFramebuffers(1, frame, 0)
+        // 删除纹理
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
+        GLES30.glDeleteTextures(1, textures, 0)
+
+        // 删除Render Buffer
+        GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, GLES30.GL_NONE)
     }
 }

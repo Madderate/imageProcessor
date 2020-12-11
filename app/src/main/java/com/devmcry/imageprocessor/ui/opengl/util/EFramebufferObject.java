@@ -74,29 +74,12 @@ public class EFramebufferObject {
             this.width = width;
             this.height = height;
 
-            GLES30.glGenFramebuffers(args.length, args, 0);
-            framebufferName = args[0];
-            GLES30.glBindFramebuffer(GL_FRAMEBUFFER, framebufferName);
 
-            GLES30.glGenRenderbuffers(args.length, args, 0);
-            renderbufferName = args[0];
-            GLES30.glBindRenderbuffer(GL_RENDERBUFFER, renderbufferName);
-            GLES30.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
-            GLES30.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbufferName);
+            texName = EglUtil.INSTANCE.createFBOTexture(args, width, height);
+            framebufferName = EglUtil.INSTANCE.createFrameBuffer(args);
+            renderbufferName = EglUtil.INSTANCE.createRenderBuffer(args);
 
-            GLES30.glGenTextures(args.length, args, 0);
-            texName = args[0];
-            GLES30.glBindTexture(GL_TEXTURE_2D, texName);
-
-            GLES30.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            GLES30.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            GLES30.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            GLES30.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-
-
-            GLES30.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
-            GLES30.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texName, 0);
+            EglUtil.INSTANCE.bindFBO(framebufferName, texName, renderbufferName, width, height);
 
             final int status = GLES30.glCheckFramebufferStatus(GL_FRAMEBUFFER);
             if (status != GL_FRAMEBUFFER_COMPLETE) {
@@ -107,9 +90,9 @@ public class EFramebufferObject {
             throw e;
         }
 
+        GLES30.glBindTexture(GL_TEXTURE_2D, saveTexName);
         GLES30.glBindFramebuffer(GL_FRAMEBUFFER, saveFramebuffer);
         GLES30.glBindRenderbuffer(GL_RENDERBUFFER, saveRenderbuffer);
-        GLES30.glBindTexture(GL_TEXTURE_2D, saveTexName);
     }
 
     public void release() {

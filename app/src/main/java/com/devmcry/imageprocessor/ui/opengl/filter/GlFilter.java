@@ -50,6 +50,7 @@ public class GlFilter {
             1.0f, -1.0f, 0.0f, 1.0f, 0.0f
     };
 
+
     private static final int FLOAT_SIZE_BYTES = 4;
     protected static final int VERTICES_DATA_POS_SIZE = 3;
     protected static final int VERTICES_DATA_UV_SIZE = 2;
