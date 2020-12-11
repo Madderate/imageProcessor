@@ -33,10 +33,6 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
     var contentTextureId = NO_TEXTURE
 
 
-    fun setup(cubeData: FloatArray) {
-        verticeFragmentData = cubeData
-        setup()
-    }
 
     fun setup(cubeData: FloatArray, textureId: Int) {
         verticeFragmentData = cubeData
