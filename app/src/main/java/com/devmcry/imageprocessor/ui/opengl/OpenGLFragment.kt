@@ -94,15 +94,22 @@ class OpenGLFragment : Fragment() {
         eplayerView.initRenderer(context)
         eplayerView.setSimpleExoPlayer(player)
         // NO.1.2 player set filter
-        // TODO balibell
-        var bitmap: Bitmap = BitmapFactory.decodeResource(context?.resources, R.drawable.test)
 
-        val ratio = bitmap.width.toFloat() / bitmap.height
-        val height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
-        eplayerView.layoutParams.height = height
-        eplayerView.requestLayout()
+        if (context != null) {
+            var bitmap: Bitmap = BitmapFactory.decodeResource(requireContext().resources, R.drawable.test3)
+            var ratio = bitmap.width.toFloat() / bitmap.height
+            var height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
+            eplayerView.setContentFilter(ContentFilter(), bitmap)
 
-        eplayerView.setContentFilter(ContentFilter(), bitmap)
+            eplayerView.layoutParams.height = height
+            eplayerView.requestLayout()
+        } else {
+            eplayerView.layoutParams.height = 800
+            eplayerView.requestLayout()
+        }
+
+
+
         eplayerView.setAlphaFrameFilter(AlphaFrameFilter())
 
 

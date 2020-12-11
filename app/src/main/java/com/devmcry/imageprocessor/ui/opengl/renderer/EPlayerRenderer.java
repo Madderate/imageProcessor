@@ -235,7 +235,6 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
 
         previewFilter.draw(previewTextureId, MVPMatrix, STMatrix, alphaFrameSourceRatio);
 
-        glViewport(0, 0, bufferObject.getWidth(), bufferObject.getHeight());
 
         if (alphaFrameFilter != null) {
             alphaFrameBufferObject.enable();
@@ -243,8 +242,10 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             alphaFrameFilter.draw(videoFrameBufferObject.getTexName(), null);
         }
 
+
         if (contentFilter != null) {
             bufferObject.enable();
+            glViewport(0, 0, bufferObject.getWidth(), bufferObject.getHeight());
             GLES30.glClear(GL_COLOR_BUFFER_BIT);
             contentFilter.draw(alphaFrameBufferObject.getTexName(), null);
         }
