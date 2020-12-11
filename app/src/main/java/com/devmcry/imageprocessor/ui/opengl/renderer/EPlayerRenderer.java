@@ -57,16 +57,17 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
     private GlPreviewFilter previewFilter;
 
     private ContentFilter contentFilter;
-    private EFramebufferObject contentBufferObject;
+//    private EFramebufferObject contentBufferObject;
     private Bitmap contentBitmap;
 
     private AlphaFrameFilter alphaFrameFilter;
+    private EFramebufferObject videoFrameBufferObject;
     private EFramebufferObject alphaFrameBufferObject;
+    private float alphaFrameSourceRatio = 1080/1920f;
 
 
     private final EPlayerView glPreview;
 
-    private float textureRatio = 1080/1920f;
 
     private SimpleExoPlayer simpleExoPlayer;
 
@@ -86,12 +87,17 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
                     alphaFrameFilter = null;
                 }
 
+                if (videoFrameBufferObject != null) {
+                    videoFrameBufferObject.release();
+                    videoFrameBufferObject = null;
+                }
                 if (alphaFrameBufferObject != null) {
                     alphaFrameBufferObject.release();
                     alphaFrameBufferObject = null;
                 }
 
                 alphaFrameFilter = filter;
+                videoFrameBufferObject = new EFramebufferObject();
                 alphaFrameBufferObject = new EFramebufferObject();
                 glPreview.requestRender();
             }
@@ -108,14 +114,14 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
                     contentFilter.release();
                     contentFilter = null;
                 }
-
-                if (contentBufferObject != null) {
-                    contentBufferObject.release();
-                    contentBufferObject = null;
-                }
+//
+//                if (contentBufferObject != null) {
+//                    contentBufferObject.release();
+//                    contentBufferObject = null;
+//                }
 
                 contentFilter = filter;
-                contentBufferObject = new EFramebufferObject();
+//                contentBufferObject = new EFramebufferObject();
                 contentBitmap = bitmap;
 
                 glPreview.requestRender();
@@ -150,8 +156,7 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         GLES30.glTexParameteri(previewTexture.getTextureTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         GLES30.glTexParameteri(previewTexture.getTextureTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-
-        // NO.2.5 绑定 normal 纹理
+        // 解绑 texture
         GLES30.glBindTexture(GL_TEXTURE_2D, 0);
 
         // GL_TEXTURE_EXTERNAL_OES
@@ -181,25 +186,25 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
     public void onSurfaceChanged(final int width, final int height) {
         Log.d(TAG, "onSurfaceChanged width = " + width + "  height = " + height);
 
-        if (contentFilter != null && contentBufferObject != null && contentBitmap != null) {
+        if (contentFilter != null && contentBitmap != null) {
             int textureId = EglUtil.INSTANCE.loadTexture(contentBitmap, NO_TEXTURE, GLES30.GL_TEXTURE_2D, false);
 
             float[] cubeData = GlFilter.adjustImageScaling(ContentFilter.Companion.getCUBE_DATA(), contentBitmap.getWidth(), contentBitmap.getHeight(), width, height);
-            contentFilter.setup(cubeData);
-            contentFilter.setContentTextureId(textureId);
-            contentBufferObject.setup(width, height);
+            contentFilter.setup(cubeData, textureId);
+//            contentBufferObject.setup(width, height);
         }
 
-        if (alphaFrameFilter != null && alphaFrameBufferObject != null) {
+        if (alphaFrameFilter != null) {
             alphaFrameFilter.setup();
-            alphaFrameBufferObject.setup(width, (int)(width/textureRatio) );
+            videoFrameBufferObject.setup(width, (int)(width/alphaFrameSourceRatio));
+            alphaFrameBufferObject.setup(width, height);
         }
 
 
-        float bottom = -textureRatio * height / width;
+        float bottom = -alphaFrameSourceRatio * height / width;
         float top = 2 + bottom;
 
-        Matrix.orthoM(ProjMatrix, 0, -textureRatio, textureRatio, bottom,  top, 5, 7);
+        Matrix.orthoM(ProjMatrix, 0, -alphaFrameSourceRatio, alphaFrameSourceRatio, bottom, top, 5, 7);
         Matrix.setIdentityM(MMatrix, 0);
     }
 
@@ -217,9 +222,10 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             }
         }
 
-        if (alphaFrameFilter != null && alphaFrameBufferObject != null) {
-            alphaFrameBufferObject.enable();
-            glViewport(0, 0, alphaFrameBufferObject.getWidth(), alphaFrameBufferObject.getHeight());
+        if (alphaFrameFilter != null) {
+            // 开启 videoFrameBuffer 接收原始视频的帧数据
+            videoFrameBufferObject.enable();
+            glViewport(0, 0, videoFrameBufferObject.getWidth(), videoFrameBufferObject.getHeight());
         }
 
         GLES30.glClear(GL_COLOR_BUFFER_BIT);
@@ -227,20 +233,20 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         Matrix.multiplyMM(MVPMatrix, 0, VMatrix, 0, MMatrix, 0);
         Matrix.multiplyMM(MVPMatrix, 0, ProjMatrix, 0, MVPMatrix, 0);
 
-        previewFilter.draw(previewTextureId, MVPMatrix, STMatrix, textureRatio);
+        previewFilter.draw(previewTextureId, MVPMatrix, STMatrix, alphaFrameSourceRatio);
 
+        glViewport(0, 0, bufferObject.getWidth(), bufferObject.getHeight());
 
-
-        if (alphaFrameFilter != null && alphaFrameBufferObject != null) {
-            bufferObject.enable();
+        if (alphaFrameFilter != null) {
+            alphaFrameBufferObject.enable();
             GLES30.glClear(GL_COLOR_BUFFER_BIT);
-            alphaFrameFilter.draw(alphaFrameBufferObject.getTexName(), alphaFrameBufferObject);
+            alphaFrameFilter.draw(videoFrameBufferObject.getTexName(), null);
         }
 
-        if (contentFilter != null && contentBufferObject != null) {
+        if (contentFilter != null) {
             bufferObject.enable();
             GLES30.glClear(GL_COLOR_BUFFER_BIT);
-            contentFilter.draw(contentFilter.getContentTextureId(), alphaFrameBufferObject);
+            contentFilter.draw(alphaFrameBufferObject.getTexName(), null);
         }
     }
 
@@ -258,6 +264,9 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
     public void release() {
         if (alphaFrameFilter != null) {
             alphaFrameFilter.release();
+        }
+        if (videoFrameBufferObject != null) {
+            videoFrameBufferObject.release();
         }
         if (alphaFrameBufferObject != null) {
             alphaFrameBufferObject.release();

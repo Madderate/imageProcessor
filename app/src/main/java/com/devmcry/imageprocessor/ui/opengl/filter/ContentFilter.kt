@@ -19,15 +19,15 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
         )
 
         const val FRAGMENT_SHADER = """
-    varying highp vec2 vTextureCoord;
-    uniform sampler2D sTexture;
-    uniform sampler2D sTexture2;
-    void main(){
-         lowp vec4 coverTexture = texture2D(sTexture2, vTextureCoord);
-         lowp vec4 contentTexture = texture2D(sTexture, vTextureCoord);
-         gl_FragColor = mix(contentTexture, coverTexture, coverTexture.a);
-    }
-    """
+                varying highp vec2 vTextureCoord;
+                uniform sampler2D sTexture;
+                uniform sampler2D sTextureContent;
+                void main(){
+                    lowp vec4 coverTexture = texture2D(sTexture, vTextureCoord);
+                    lowp vec4 contentTexture = texture2D(sTextureContent, vTextureCoord);
+                    gl_FragColor = mix(contentTexture, coverTexture, coverTexture.a);
+                }
+                """
     }
 
     var contentTextureId = NO_TEXTURE
@@ -38,9 +38,17 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
         setup()
     }
 
+    fun setup(cubeData: FloatArray, textureId: Int) {
+        verticeFragmentData = cubeData
+        contentTextureId = textureId
+        setup()
+    }
+
+
     override fun onDraw() {
-        GLES30.glActiveTexture(GLES30.GL_TEXTURE1)
+        var idx = 1;
+        GLES30.glActiveTexture(GLES30.GL_TEXTURE0 + idx)
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, contentTextureId)
-        GLES30.glUniform1i(getHandle("sTexture2"), 0)
+        GLES30.glUniform1i(getHandle("sTextureContent"), idx)
     }
 }

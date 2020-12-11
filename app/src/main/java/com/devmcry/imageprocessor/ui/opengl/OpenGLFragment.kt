@@ -80,7 +80,7 @@ class OpenGLFragment : Fragment() {
             it.printStackTrace()
         }
         val videoSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
-            .createMediaSource(Uri.parse("asset:///cover7.mp4"))
+            .createMediaSource(Uri.parse("asset:///cover8.mp4"))
 
         // SimpleExoPlayer
         val player = ExoPlayerFactory.newSimpleInstance(requireContext())

@@ -146,7 +146,8 @@ object EglUtil {
     }
 
 
-    fun createTexture(args: IntArray): Int {
+    fun createTexture(): Int {
+        var args = IntArray(1)
         // 生成纹理
         GLES30.glGenTextures(args.size, args, 0)
         return args[0]
