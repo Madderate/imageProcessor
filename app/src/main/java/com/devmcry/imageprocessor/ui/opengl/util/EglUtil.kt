@@ -10,6 +10,7 @@ import com.devmcry.imageprocessor.BuildConfig
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+import kotlin.jvm.Throws
 
 /**
  * Created by sudamasayuki on 2017/05/16.

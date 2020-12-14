@@ -92,10 +92,9 @@ class OpenGLFragment : Fragment() {
         // NO.1.2 player set filter
 
         if (context != null) {
-            val bitmap: Bitmap =
-                BitmapFactory.decodeResource(requireContext().resources, R.drawable.test3)
-            val ratio = bitmap.width.toFloat() / bitmap.height
-            val height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
+            var bitmap: Bitmap = BitmapFactory.decodeResource(requireContext().resources, R.drawable.test)
+            var ratio = bitmap.width.toFloat() / bitmap.height
+            var height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
             eplayerView.setContentFilter(ContentFilter(), bitmap)
 
             eplayerView.layoutParams.height = height
