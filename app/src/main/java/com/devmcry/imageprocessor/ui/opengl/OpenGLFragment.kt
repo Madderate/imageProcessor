@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +13,6 @@ import androidx.fragment.app.Fragment
 import com.devmcry.imageprocessor.R
 import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter
 import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter
-import com.devmcry.imageprocessor.ui.opengl.renderer.OpenGLRender
-import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer

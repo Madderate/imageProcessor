@@ -1,4 +1,4 @@
-package com.devmcry.imageprocessor.ui.opengl.renderer
+package com.devmcry.imageprocessor.ui.dynamic
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,8 +6,6 @@ import android.graphics.SurfaceTexture
 import android.graphics.SurfaceTexture.OnFrameAvailableListener
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
-import com.devmcry.imageprocessor.ui.opengl.NO_TEXTURE
-import com.devmcry.imageprocessor.ui.opengl.OpenGLImageShader
 import com.devmcry.imageprocessor.ui.opengl.util.EglUtil
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

@@ -1,6 +1,5 @@
-package com.devmcry.imageprocessor.ui.opengl
+package com.devmcry.imageprocessor.ui.dynamic
 
-import android.opengl.GLES11Ext
 import android.opengl.GLES30
 import com.devmcry.imageprocessor.ui.opengl.util.EglUtil
 import java.nio.FloatBuffer

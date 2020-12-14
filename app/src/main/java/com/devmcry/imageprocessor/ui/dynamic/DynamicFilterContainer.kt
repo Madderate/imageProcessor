@@ -10,7 +10,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.devmcry.imageprocessor.R
 import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter
 import com.devmcry.imageprocessor.ui.opengl.EPlayerView
-import com.devmcry.imageprocessor.ui.opengl.renderer.OpenGLRender
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
