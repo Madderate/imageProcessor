@@ -16,7 +16,9 @@ import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter
 import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter
 import com.devmcry.imageprocessor.ui.opengl.renderer.OpenGLRender
 import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -30,9 +32,13 @@ class OpenGLFragment : Fragment() {
     private lateinit var root: View
     private lateinit var fab: FloatingActionButton
 
-    private lateinit var glSurfaceView: GLSurfaceView
     private lateinit var eplayerView: EPlayerView
-    private lateinit var glRender: OpenGLRender
+    private val player by lazy {
+        SimpleExoPlayer.Builder(requireContext()).build().apply {
+            playWhenReady = true
+            repeatMode = Player.REPEAT_MODE_ALL
+        }
+    }
 
     companion object {
         const val REQ_CHOOSE_PICS = 100
@@ -44,7 +50,6 @@ class OpenGLFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         root = inflater.inflate(R.layout.fragment_opengl, container, false)
-        glSurfaceView = root.findViewById(R.id.surfaceView)
         eplayerView = root.findViewById(R.id.eplayerView)
         fab = root.findViewById(R.id.fab)
         return root
@@ -58,6 +63,12 @@ class OpenGLFragment : Fragment() {
 
     private fun initView() {
         fab.setOnClickListener { view ->
+            val index = listOf("1", "3", "4", "5", "8").shuffled()[0]
+            val videoSource =
+                ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
+                    .createMediaSource(MediaItem.fromUri(Uri.parse("asset:///cover${index}.mp4")))
+            player.setMediaSource(videoSource)
+            player.prepare()
             Intent().run {
                 type = "image/*"
                 putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
@@ -71,24 +82,12 @@ class OpenGLFragment : Fragment() {
     }
 
     private fun initOpenGL() {
-        glSurfaceView.runCatching {
-            glRender = OpenGLRender(requireContext())
-            setEGLContextClientVersion(3)
-            setRenderer(glRender)
-            renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
-        }.onFailure {
-            it.printStackTrace()
-        }
         val videoSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
-            .createMediaSource(Uri.parse("asset:///cover8.mp4"))
+            .createMediaSource(MediaItem.fromUri(Uri.parse("asset:///cover8.mp4")))
 
-        // SimpleExoPlayer
-        val player = ExoPlayerFactory.newSimpleInstance(requireContext())
         // Prepare the player with the source.
-        player.prepare(videoSource)
-        player.playWhenReady = true
-        player.repeatMode = Player.REPEAT_MODE_ALL
-
+        player.setMediaSource(videoSource)
+        player.prepare()
 
         // NO.1.1 player init render
         eplayerView.initRenderer(context)
@@ -96,41 +95,27 @@ class OpenGLFragment : Fragment() {
         // NO.1.2 player set filter
 
         if (context != null) {
-            var bitmap: Bitmap = BitmapFactory.decodeResource(requireContext().resources, R.drawable.test3)
-            var ratio = bitmap.width.toFloat() / bitmap.height
-            var height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
+            val bitmap: Bitmap =
+                BitmapFactory.decodeResource(requireContext().resources, R.drawable.test3)
+            val ratio = bitmap.width.toFloat() / bitmap.height
+            val height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
             eplayerView.setContentFilter(ContentFilter(), bitmap)
 
             eplayerView.layoutParams.height = height
             eplayerView.requestLayout()
-        } else {
-            eplayerView.layoutParams.height = 800
-            eplayerView.requestLayout()
         }
-
-
-
         eplayerView.setAlphaFrameFilter(AlphaFrameFilter())
-
-
-
         eplayerView.onResume()
     }
 
 
     // 选完图片之后重新绘制
     private fun updateGLSurfaceView(bitmap: Bitmap) {
-        glSurfaceView.runCatching {
-            postDelayed({
-                val ratio = bitmap.width.toFloat() / bitmap.height
-                val height = (glSurfaceView.measuredWidth / ratio).toInt()
-                glSurfaceView.layoutParams.height = height
-                requestLayout()
-                queueEvent {
-                    glRender.mBitmap = bitmap
-                }
-            }, 10)
-        }
+        val ratio = bitmap.width.toFloat() / bitmap.height
+        val height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
+        eplayerView.setContentFilter(ContentFilter(), bitmap)
+        eplayerView.layoutParams.height = height
+        eplayerView.requestLayout()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

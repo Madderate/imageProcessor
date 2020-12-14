@@ -4,13 +4,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.graphics.SurfaceTexture.OnFrameAvailableListener
-import android.opengl.GLES30.GL_TEXTURE_2D
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import com.devmcry.imageprocessor.ui.opengl.NO_TEXTURE
-import com.devmcry.imageprocessor.ui.opengl.OpenGLDynamicFilterShader
 import com.devmcry.imageprocessor.ui.opengl.OpenGLImageShader
-import com.devmcry.imageprocessor.ui.opengl.loadTexture
 import com.devmcry.imageprocessor.ui.opengl.util.EglUtil
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -64,9 +61,6 @@ class OpenGLRender(private val mContext: Context) : GLSurfaceView.Renderer,
     private var mOutputWidth: Int = 0
     private var mOutputHeight: Int = 0
     private val mGLImageShader by lazy { OpenGLImageShader() }
-
-    private var mGLFilterTextureId: Int = 0 // 滤镜纹理 id
-    private val mGLDynamicFilterHandler by lazy { OpenGLDynamicFilterShader() }
 
     // 顶点数组缓冲器
     private val mGLCubeBuffer by lazy {
