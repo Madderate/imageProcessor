@@ -11,11 +11,11 @@ import com.devmcry.imageprocessor.ui.opengl.util.EglUtil.NO_TEXTURE
  */
 class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
     companion object {
-       val CUBE_DATA = floatArrayOf(
-                -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-                1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-                -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                1.0f, 1.0f, 0.0f, 1.0f, 0.0f
+        val CUBE_DATA = floatArrayOf(
+            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+            1.0f, 1.0f, 0.0f, 1.0f, 0.0f
         )
 
         const val FRAGMENT_SHADER = """
@@ -24,7 +24,7 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
                 uniform sampler2D sTextureContent;
                 void main(){
                     lowp vec4 coverTexture = texture2D(sTexture, vTextureCoord);
-                    lowp vec4 contentTexture = texture2D(sTextureContent, vTextureCoord);
+                    lowp vec4 contentTexture = texture2D(sTextureContent, vec2(vTextureCoord.x,1.0-vTextureCoord.y));
                     gl_FragColor = mix(contentTexture, coverTexture, coverTexture.a);
                 }
                 """
@@ -33,7 +33,7 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
     var contentTextureId = NO_TEXTURE
 
     fun setup(cubeData: FloatArray, textureId: Int) {
-        verticeFragmentData = cubeData
+//        verticeFragmentData = cubeData
         contentTextureId = textureId
         setup()
     }

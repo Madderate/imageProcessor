@@ -169,9 +169,11 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         if (contentFilter != null && contentBitmap != null) {
             int textureId = EglUtil.INSTANCE.loadTexture(contentBitmap, NO_TEXTURE, GLES30.GL_TEXTURE_2D, false);
 
-            float[] cubeData = GlFilter.adjustImageScaling(ContentFilter.Companion.getCUBE_DATA(), contentBitmap.getWidth(), contentBitmap.getHeight(), width, height);
-            contentFilter.setup(cubeData, textureId);
-//            contentBufferObject.setup(width, height);
+            contentFilter.setContentTextureId(textureId);
+            contentFilter.setup();
+
+//            float[] cubeData = GlFilter.adjustImageScaling(ContentFilter.Companion.getCUBE_DATA(), contentBitmap.getWidth(), contentBitmap.getHeight(), width, height);
+//            contentFilter.setup(cubeData, textureId);
         }
 
         if (alphaFrameFilter != null) {
