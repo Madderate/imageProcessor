@@ -39,12 +39,10 @@ import static com.devmcry.imageprocessor.ui.opengl.util.EglUtil.NO_TEXTURE;
 
 public class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTexture.OnFrameAvailableListener {
 
-    private static final String TAG =EPlayerRenderer.class.getSimpleName();
-
+    private static final String TAG = EPlayerRenderer.class.getSimpleName();
 
     private ESurfaceTexture previewTexture;
     private boolean updateSurface = false;
-
 
     private float[] MVPMatrix = new float[16];
     private float[] ProjMatrix = new float[16];
@@ -52,22 +50,18 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
     private float[] VMatrix = new float[16];
     private float[] STMatrix = new float[16];
 
-
     private int previewTextureId;
     private GlPreviewFilter previewFilter;
 
     private ContentFilter contentFilter;
-//    private EFramebufferObject contentBufferObject;
     private Bitmap contentBitmap;
 
     private AlphaFrameFilter alphaFrameFilter;
     private EFramebufferObject videoFrameBufferObject;
     private EFramebufferObject alphaFrameBufferObject;
-    private float alphaFrameSourceRatio = 1080/1920f;
-
+    private float alphaFrameSourceRatio = 1080 / 1920f;
 
     private final EPlayerView glPreview;
-
 
     private SimpleExoPlayer simpleExoPlayer;
 
@@ -81,7 +75,6 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         glPreview.queueEvent(new Runnable() {
             @Override
             public void run() {
-
                 if (alphaFrameFilter != null) {
                     alphaFrameFilter.release();
                     alphaFrameFilter = null;
@@ -104,32 +97,22 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         });
     }
 
-
     public void setContentFilter(@NotNull final ContentFilter filter, Bitmap bitmap) {
         glPreview.queueEvent(new Runnable() {
             @Override
             public void run() {
-
                 if (contentFilter != null) {
                     contentFilter.release();
                     contentFilter = null;
                 }
-//
-//                if (contentBufferObject != null) {
-//                    contentBufferObject.release();
-//                    contentBufferObject = null;
-//                }
 
                 contentFilter = filter;
-//                contentBufferObject = new EFramebufferObject();
                 contentBitmap = bitmap;
 
                 glPreview.requestRender();
             }
         });
     }
-
-
 
     @Override
     public void onSurfaceCreated(final EGLConfig config) {
@@ -145,7 +128,7 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         previewTextureId = args[0];
 
         previewTexture = new ESurfaceTexture(previewTextureId);
-        previewTexture.setOnFrameAvailableListener(EPlayerRenderer.this::onFrameAvailable);
+        previewTexture.setOnFrameAvailableListener(EPlayerRenderer.this);
 
         // external  target GL_TEXTURE_EXTERNAL_OES 为纹理单元目标类型
         // NO.2.3 绑定 external 纹理
@@ -176,11 +159,8 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             updateSurface = false;
         }
 
-
         GLES30.glGetIntegerv(GL_MAX_TEXTURE_SIZE, args, 0);
-
     }
-
 
     @Override
     public void onSurfaceChanged(final int width, final int height) {
@@ -196,11 +176,15 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
 
         if (alphaFrameFilter != null) {
             alphaFrameFilter.setup();
-            videoFrameBufferObject.setup(width, (int)(width/alphaFrameSourceRatio));
+            videoFrameBufferObject.setup(width, (int) (width / alphaFrameSourceRatio));
             alphaFrameBufferObject.setup(width, height);
         }
 
-
+        // 关键：视频居中
+        // 由于视频和图片是顶点对齐，为了将视频居中需要对视频渲染的正交矩阵进行重新运算
+        //  bottom = ratioVideo / ratioImage
+        //  top = 2 + bottom
+        // left right bottom top 取值 -1 ～ 1
         float bottom = -alphaFrameSourceRatio * height / width;
         float top = 2 + bottom;
 
@@ -211,8 +195,6 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
     @Override
     public void onDrawFrame(final EFramebufferObject bufferObject) {
         GLES30.glEnable(GLES30.GL_BLEND);
-        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-
 
         synchronized (this) {
             if (updateSurface) {
@@ -222,35 +204,39 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             }
         }
 
-        if (alphaFrameFilter != null) {
-            // 开启 videoFrameBuffer 接收原始视频的帧数据
-            videoFrameBufferObject.enable();
-            glViewport(0, 0, videoFrameBufferObject.getWidth(), videoFrameBufferObject.getHeight());
-        }
-
         GLES30.glClear(GL_COLOR_BUFFER_BIT);
 
         Matrix.multiplyMM(MVPMatrix, 0, VMatrix, 0, MMatrix, 0);
         Matrix.multiplyMM(MVPMatrix, 0, ProjMatrix, 0, MVPMatrix, 0);
 
-        previewFilter.draw(previewTextureId, MVPMatrix, STMatrix, alphaFrameSourceRatio);
-
+        if (previewFilter != null) {
+            // 开启 videoFrameBuffer 接收原始视频的帧数据
+            videoFrameBufferObject.enable();
+            glViewport(0, 0, videoFrameBufferObject.getWidth(), videoFrameBufferObject.getHeight());
+            // 将视频帧绘制到 fbo 上
+            previewFilter.draw(previewTextureId, MVPMatrix, STMatrix, alphaFrameSourceRatio);
+        }
 
         if (alphaFrameFilter != null) {
+            // 开启 alphaFrameBufferObject 接收视频帧合并后的产物
             alphaFrameBufferObject.enable();
-            GLES30.glClear(GL_COLOR_BUFFER_BIT);
+            glViewport(0, 0, videoFrameBufferObject.getWidth(), videoFrameBufferObject.getHeight());
+            // 将合并视频帧绘制到 fbo 上
             alphaFrameFilter.draw(videoFrameBufferObject.getTexName(), null);
         }
 
-
         if (contentFilter != null) {
+            // 关键：修正视频颜色显示
+            GLES30.glBlendFunc(GLES30.GL_ONE, GLES30.GL_ZERO);
+            // 开启 bufferObject 接收最终产物
             bufferObject.enable();
             glViewport(0, 0, bufferObject.getWidth(), bufferObject.getHeight());
-            GLES30.glClear(GL_COLOR_BUFFER_BIT);
+            // 将最终视频帧绘制到 fbo 上
             contentFilter.draw(alphaFrameBufferObject.getTexName(), null);
         }
-    }
 
+        GLES30.glDisable(GLES30.GL_BLEND);
+    }
 
     @Override
     public synchronized void onFrameAvailable(final SurfaceTexture previewTexture) {

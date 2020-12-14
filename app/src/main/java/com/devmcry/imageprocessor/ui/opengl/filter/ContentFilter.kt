@@ -32,8 +32,6 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
 
     var contentTextureId = NO_TEXTURE
 
-
-
     fun setup(cubeData: FloatArray, textureId: Int) {
         verticeFragmentData = cubeData
         contentTextureId = textureId
@@ -42,7 +40,7 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
 
 
     override fun onDraw() {
-        var idx = 1;
+        val idx = 1
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0 + idx)
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, contentTextureId)
         GLES30.glUniform1i(getHandle("sTextureContent"), idx)

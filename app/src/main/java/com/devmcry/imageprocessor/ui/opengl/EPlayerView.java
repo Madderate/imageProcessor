@@ -25,8 +25,6 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
     private EPlayerRenderer renderer;
     private SimpleExoPlayer player;
 
-    private float videoAspect = 1f;
-
     public EPlayerView(Context context) {
         this(context, null);
     }
@@ -49,8 +47,6 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
         }
         setRenderer(renderer);
     }
-
-
 
     public EPlayerView setSimpleExoPlayer(SimpleExoPlayer player) {
         if (this.player != null) {
@@ -77,14 +73,8 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
         renderer.release();
     }
 
-    //////////////////////////////////////////////////////////////////////////
-    // SimpleExoPlayer.VideoListener
-
     @Override
     public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-        // Log.d(TAG, "width = " + width + " height = " + height + " unappliedRotationDegrees = " + unappliedRotationDegrees + " pixelWidthHeightRatio = " + pixelWidthHeightRatio);
-        videoAspect = ((float) width / height) * pixelWidthHeightRatio;
-        // Log.d(TAG, "videoAspect = " + videoAspect);
         requestLayout();
     }
 
