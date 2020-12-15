@@ -24,11 +24,11 @@ public class ESurfaceTexture implements SurfaceTexture.OnFrameAvailableListener 
     }
     private int textureId;
 
-    public ESurfaceTexture(final int texId, int texType) {
+    public ESurfaceTexture(int texType, final int texId) {
         surfaceTexture = new SurfaceTexture(texId);
         surfaceTexture.setOnFrameAvailableListener(this);
-        textureId = texId;
         textureType = texType;
+        textureId = texId;
     }
 
     public void setOnFrameAvailableListener(final SurfaceTexture.OnFrameAvailableListener l) {

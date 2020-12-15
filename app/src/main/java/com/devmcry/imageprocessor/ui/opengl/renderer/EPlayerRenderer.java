@@ -13,11 +13,13 @@ import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter;
 import com.devmcry.imageprocessor.ui.opengl.filter.GlPreviewFilter;
 import com.devmcry.imageprocessor.ui.opengl.recorder.PixelRecorder;
 import com.devmcry.imageprocessor.ui.opengl.util.EFramebufferObject;
+import com.devmcry.imageprocessor.ui.opengl.util.ESurfaceTexture;
 import com.devmcry.imageprocessor.ui.opengl.util.EglUtil;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 
+import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 import static android.opengl.GLES30.GL_CLAMP_TO_EDGE;
 import static android.opengl.GLES30.GL_TEXTURE_MAG_FILTER;
 import static android.opengl.GLES30.GL_TEXTURE_MIN_FILTER;
@@ -25,7 +27,6 @@ import static android.opengl.GLES30.GL_TEXTURE_WRAP_S;
 import static android.opengl.GLES30.GL_TEXTURE_WRAP_T;
 import static android.opengl.GLES30.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES30.GL_LINEAR;
-import static android.opengl.GLES30.GL_MAX_TEXTURE_SIZE;
 import static android.opengl.GLES30.GL_NEAREST;
 import static android.opengl.GLES30.GL_TEXTURE_2D;
 
@@ -37,12 +38,10 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
 
     final private static  String TAG = EPlayerRenderer.class.getSimpleName();
 
-    private ESurfaceTexture previewTexture;
     private boolean updatePreviewSurface = false;
 
 
-
-    private int previewTextureId;
+    private ESurfaceTexture previewTexture;
     private GlPreviewFilter previewFilter;
     private AlphaFrameFilter alphaFrameFilter;
     private ContentFilter contentFilter;
@@ -102,27 +101,11 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
 
         final int[] args = new int[1];
 
-        // NO.2.2 生成纹理，记录纹理ID
-        GLES30.glGenTextures(args.length, args, 0);
-        previewTextureId = args[0];
-
-        previewTexture = new ESurfaceTexture(previewTextureId);
+        previewTexture = EglUtil.INSTANCE.createSurfaceTexture(args, GL_TEXTURE_EXTERNAL_OES);
         previewTexture.setOnFrameAvailableListener(EPlayerRenderer.this);
 
-        // external  target GL_TEXTURE_EXTERNAL_OES 为纹理单元目标类型
-        // NO.2.3 绑定 external 纹理
-        GLES30.glBindTexture(previewTexture.getTextureTarget(), previewTextureId);
-        // NO.2.4 配置 external 纹理过滤模式和环绕方式
-        GLES30.glTexParameterf(previewTexture.getTextureTarget(), GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        GLES30.glTexParameterf(previewTexture.getTextureTarget(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        GLES30.glTexParameteri(previewTexture.getTextureTarget(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        GLES30.glTexParameteri(previewTexture.getTextureTarget(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        // 解绑 texture
-        GLES30.glBindTexture(GL_TEXTURE_2D, 0);
-
         // GL_TEXTURE_EXTERNAL_OES
-        previewFilter = new GlPreviewFilter(previewTexture.getTextureTarget(), coverSourceWHRatio);
+        previewFilter = new GlPreviewFilter(GL_TEXTURE_EXTERNAL_OES, coverSourceWHRatio);
 
 
         if (pixelRecorder != null) {
@@ -136,7 +119,7 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             updatePreviewSurface = false;
         }
 
-        GLES30.glGetIntegerv(GL_MAX_TEXTURE_SIZE, args, 0);
+//        GLES30.glGetIntegerv(GL_MAX_TEXTURE_SIZE, args, 0);
     }
 
 
@@ -174,7 +157,7 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             }
         }
 
-        EFramebufferObject nextBuffer1 = EglUtil.INSTANCE.bufferPipe(previewFilter, bufferObject, previewTextureId);
+        EFramebufferObject nextBuffer1 = EglUtil.INSTANCE.bufferPipe(previewFilter, bufferObject, previewTexture.getTextureId());
         EFramebufferObject nextBuffer2 = EglUtil.INSTANCE.bufferPipe(alphaFrameFilter, nextBuffer1);
 
         contentFilter.setBufferObject(bufferObject);
@@ -203,8 +186,11 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         if (alphaFrameFilter != null) {
             alphaFrameFilter.release();
         }
-        if (previewTexture != null) {
-            previewTexture.release();
+        if (contentFilter != null) {
+            contentFilter.release();
+        }
+        if (previewFilter != null) {
+            previewFilter.release();
         }
     }
 

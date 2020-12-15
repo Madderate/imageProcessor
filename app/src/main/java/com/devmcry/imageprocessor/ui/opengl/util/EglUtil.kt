@@ -159,26 +159,14 @@ object EglUtil {
         GLES30.glGenTextures(args.size, args, 0)
         // NO.2.2 记录纹理ID
         var previewTextureId = args[0]
-        var previewTexture: ESurfaceTexture =
-            ESurfaceTexture(
-                previewTextureId,
-                texType
-            )
+        var previewTexture: ESurfaceTexture = ESurfaceTexture(texType, previewTextureId)
 
         // external  target GL_TEXTURE_EXTERNAL_OES 为纹理单元目标类型
         // NO.2.3 绑定 external 纹理
         GLES30.glBindTexture(texType, previewTextureId)
         // NO.2.4 配置 external 纹理过滤模式和环绕方式
-        GLES30.glTexParameterf(
-            texType,
-            GLES30.GL_TEXTURE_MAG_FILTER,
-            GLES30.GL_LINEAR.toFloat()
-        )
-        GLES30.glTexParameterf(
-            texType,
-            GLES30.GL_TEXTURE_MIN_FILTER,
-            GLES30.GL_NEAREST.toFloat()
-        )
+        GLES30.glTexParameterf(texType, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR.toFloat())
+        GLES30.glTexParameterf(texType, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST.toFloat())
         GLES30.glTexParameteri(texType, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE)
         GLES30.glTexParameteri(texType, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE)
 
