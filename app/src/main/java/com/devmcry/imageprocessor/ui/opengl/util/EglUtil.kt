@@ -7,6 +7,7 @@ import android.opengl.GLException
 import android.opengl.GLUtils
 import android.util.Log
 import com.devmcry.imageprocessor.BuildConfig
+import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -216,5 +217,32 @@ object EglUtil {
 
         // 删除Render Buffer
         GLES30.glBindRenderbuffer(GLES30.GL_RENDERBUFFER, GLES30.GL_NONE)
+    }
+
+
+    fun bufferPipe(
+        inputFilter: GlFilter?,
+        inputBuffer: EFramebufferObject?
+    ): EFramebufferObject? {
+        return inputBuffer?.texName?.let { bufferPipe(inputFilter, inputBuffer, it) }
+    }
+
+
+    fun bufferPipe(
+        inputFilter: GlFilter?,
+        inputBuffer: EFramebufferObject?,
+        inputTextureId: Int
+    ): EFramebufferObject? {
+        if (inputFilter == null) {
+            return inputBuffer
+        }
+
+        inputFilter.bufferObject?.let { outputBuffer ->
+            outputBuffer.enable()
+            GLES20.glViewport(0, 0, outputBuffer.width, outputBuffer.height)
+            inputFilter.draw(inputTextureId, inputBuffer)
+        }
+
+        return inputFilter.bufferObject
     }
 }

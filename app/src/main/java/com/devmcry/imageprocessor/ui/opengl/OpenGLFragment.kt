@@ -9,10 +9,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.devmcry.imageprocessor.R
-import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter
-import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter
+import com.devmcry.imageprocessor.ui.opengl.recorder.OnRecordListener
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -30,6 +30,7 @@ class OpenGLFragment : Fragment() {
     private lateinit var fab: FloatingActionButton
 
     private lateinit var eplayerView: EPlayerView
+    private lateinit var recordImageView: ImageView
     private val player by lazy {
         SimpleExoPlayer.Builder(requireContext()).build().apply {
             playWhenReady = true
@@ -49,6 +50,7 @@ class OpenGLFragment : Fragment() {
         root = inflater.inflate(R.layout.fragment_opengl, container, false)
         eplayerView = root.findViewById(R.id.eplayerView)
         fab = root.findViewById(R.id.fab)
+        recordImageView = root.findViewById(R.id.recordImageView)
         return root
     }
 
@@ -87,20 +89,22 @@ class OpenGLFragment : Fragment() {
         player.prepare()
 
         // NO.1.1 player init render
-        eplayerView.initRenderer(context)
+        eplayerView.initRenderer(context, OnRecordListener {
+            recordImageView.setImageBitmap(it)
+        })
         eplayerView.setSimpleExoPlayer(player)
         // NO.1.2 player set filter
 
         if (context != null) {
-            var bitmap: Bitmap = BitmapFactory.decodeResource(requireContext().resources, R.drawable.test)
+            var bitmap: Bitmap = BitmapFactory.decodeResource(requireContext().resources, R.drawable.test1)
             var ratio = bitmap.width.toFloat() / bitmap.height
             var height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
-            eplayerView.setContentFilter(ContentFilter(), bitmap)
+            eplayerView.buildContentFilter(bitmap)
 
             eplayerView.layoutParams.height = height
             eplayerView.requestLayout()
         }
-        eplayerView.setAlphaFrameFilter(AlphaFrameFilter())
+        eplayerView.buildAlphaFrameFilter()
         eplayerView.onResume()
     }
 
@@ -109,7 +113,7 @@ class OpenGLFragment : Fragment() {
     private fun updateGLSurfaceView(bitmap: Bitmap) {
         val ratio = bitmap.width.toFloat() / bitmap.height
         val height = (requireContext().resources.displayMetrics.widthPixels / ratio).toInt()
-        eplayerView.setContentFilter(ContentFilter(), bitmap)
+        eplayerView.buildContentFilter(bitmap)
         eplayerView.layoutParams.height = height
         eplayerView.requestLayout()
     }

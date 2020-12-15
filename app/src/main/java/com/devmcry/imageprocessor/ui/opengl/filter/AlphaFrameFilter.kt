@@ -1,8 +1,8 @@
 package com.devmcry.imageprocessor.ui.opengl.filter
 
-import com.devmcry.imageprocessor.ui.opengl.util.EglUtil
+import com.devmcry.imageprocessor.ui.opengl.util.EFramebufferObject
 
-class AlphaFrameFilter : GlFilter(VERTEX_SHADER, FRAGMENT_SHADER)  {
+class AlphaFrameFilter : GlFilter(VERTEX_SHADER, FRAGMENT_SHADER), FilterInterface {
     companion object {
         const val VERTEX_SHADER = """attribute vec4 aPosition;
                 attribute vec4 aTextureCoord;
@@ -24,11 +24,11 @@ class AlphaFrameFilter : GlFilter(VERTEX_SHADER, FRAGMENT_SHADER)  {
                 }"""
     }
 
-    var contentTextureId = EglUtil.NO_TEXTURE
 
-
-    fun setup(textureId: Int) {
-        contentTextureId = textureId
-        setup()
+    override fun setupAfterSizeChange(width: Int, height: Int) {
+        super.setup()
+        // buffer setup when size is changed
+        mBufferObject = EFramebufferObject()
+        mBufferObject!!.setup(width, height)
     }
 }

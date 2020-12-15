@@ -8,7 +8,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.devmcry.imageprocessor.R
-import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter
 import com.devmcry.imageprocessor.ui.opengl.EPlayerView
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
@@ -52,7 +51,7 @@ class DynamicFilterContainer @JvmOverloads constructor(
         player.playWhenReady = true
         player.repeatMode = Player.REPEAT_MODE_ALL
         playerView.setSimpleExoPlayer(player)
-        playerView.setAlphaFrameFilter(AlphaFrameFilter())
+        playerView.buildAlphaFrameFilter()
         playerView.onResume()
     }
 

@@ -7,8 +7,8 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter;
-import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter;
-import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
+import com.devmcry.imageprocessor.ui.opengl.recorder.OnRecordListener;
+import com.devmcry.imageprocessor.ui.opengl.recorder.PixelRecorder;
 import com.devmcry.imageprocessor.ui.opengl.renderer.EPlayerRenderer;
 import com.devmcry.imageprocessor.ui.opengl.util.EConfigChooser;
 import com.devmcry.imageprocessor.ui.opengl.util.EContextFactory;
@@ -41,9 +41,11 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
         getHolder().setFormat(PixelFormat.RGBA_8888);
     }
 
-    public void initRenderer(Context context) {
+    public void initRenderer(Context context, OnRecordListener listener) {
         if (renderer == null) {
             renderer = new EPlayerRenderer(this);
+
+            renderer.setPixelRecorder(new PixelRecorder(listener));
         }
         setRenderer(renderer);
     }
@@ -59,12 +61,12 @@ public class EPlayerView extends GLSurfaceView implements VideoListener {
         return this;
     }
 
-    public void setAlphaFrameFilter(AlphaFrameFilter glFilter) {
-        renderer.setAlphaFrameFilter(glFilter);
+    public void buildAlphaFrameFilter() {
+        renderer.buildAlphaFrameFilter();
     }
 
-    public void setContentFilter(ContentFilter glFilter, Bitmap bitmap) {
-        renderer.setContentFilter(glFilter, bitmap);
+    public void buildContentFilter(Bitmap bitmap) {
+        renderer.buildContentFilter(bitmap);
     }
 
     @Override

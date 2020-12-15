@@ -1,7 +1,9 @@
 package com.devmcry.imageprocessor.ui.opengl.filter
 
+import android.graphics.Bitmap
 import android.opengl.GLES30
 import com.devmcry.imageprocessor.ui.opengl.util.EglUtil.NO_TEXTURE
+import com.devmcry.imageprocessor.ui.opengl.util.EglUtil.loadTexture
 
 
 /**
@@ -9,7 +11,8 @@ import com.devmcry.imageprocessor.ui.opengl.util.EglUtil.NO_TEXTURE
  *  @date : 2020/12/9 18:50
  *  @description :
  */
-class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
+class ContentFilter(private val contentBitmap: Bitmap): GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER), FilterInterface {
+
     companion object {
         val CUBE_DATA = floatArrayOf(
             -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
@@ -24,7 +27,7 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
                 uniform sampler2D sTextureContent;
                 void main(){
                     lowp vec4 coverTexture = texture2D(sTexture, vTextureCoord);
-                    lowp vec4 contentTexture = texture2D(sTextureContent, vec2(vTextureCoord.x,1.0-vTextureCoord.y));
+                    lowp vec4 contentTexture = texture2D(sTextureContent, vec2(vTextureCoord.x, 1.0-vTextureCoord.y));
                     gl_FragColor = mix(contentTexture, coverTexture, coverTexture.a);
                 }
                 """
@@ -32,11 +35,12 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
 
     var contentTextureId = NO_TEXTURE
 
-    fun setup(cubeData: FloatArray, textureId: Int) {
-//        verticeFragmentData = cubeData
-        contentTextureId = textureId
-        setup()
-    }
+//    fun setup(cubeData: FloatArray, textureId: Int) {
+////        verticeFragmentData = cubeData
+//        contentTextureId = textureId
+//        setup()
+//    }
+
 
 
     override fun onDraw() {
@@ -44,5 +48,11 @@ class ContentFilter : GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER) {
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0 + idx)
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, contentTextureId)
         GLES30.glUniform1i(getHandle("sTextureContent"), idx)
+    }
+
+    override fun setupAfterSizeChange(width: Int, height: Int) {
+        super.setup()
+        val textureId = loadTexture(contentBitmap, NO_TEXTURE, GLES30.GL_TEXTURE_2D, false)
+        contentTextureId = textureId
     }
 }

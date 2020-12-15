@@ -1,13 +1,15 @@
 package com.devmcry.imageprocessor.ui.opengl.recorder
 
 import android.opengl.GLES30
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.nio.ByteBuffer
 import java.nio.IntBuffer
 
 /**
  * Created by balibell on 2020/12/14.
  */
-class PixelRecorder() {
+class PixelRecorder(recordListener: OnRecordListener? =null) {
     companion object {
 
     }
@@ -26,10 +28,11 @@ class PixelRecorder() {
     private var mPboNewIndex = 0
 
     // 像素缓存内存大小
-    private var mPboSize = 10 * 1024000
+    private var mPboSize = 0
+
 
     // 是否开启PBO
-    var isRecording = true
+    var isRecording = false
     // record准备好没
     private var isRecordInit = false
 
@@ -38,9 +41,12 @@ class PixelRecorder() {
     private val mLastTimestamp: Long = 0
 
     // record helper
-    private var mRecordHelper: RecordHelper =
-        RecordHelper()
+    private var mRecordHelper: RecordHelper = RecordHelper()
 
+
+    init {
+        mRecordHelper.setOnRecordListener(recordListener)
+    }
 
     // 开始录制
     fun startRecord() {
@@ -105,14 +111,15 @@ class PixelRecorder() {
         GLES30.glBindBuffer(GLES30.GL_PIXEL_PACK_BUFFER, 0)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun bindPixelBuffer() {
         // 绑定到第一个PBO
         GLES30.glBindBuffer(GLES30.GL_PIXEL_PACK_BUFFER, mPboIds!![mPboIndex])
-        GLES30.glReadPixels(0, 0, 100, 100, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, null)
+        GLES30.glReadPixels(0, 0, mRecordWidth, mRecordHeight, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, 0)
 
         // 第一帧没有数据跳出
         if (isRecordInit) {
-            unbindPixelBuffer()
+            changeIndexAndUnbindPBO()
             isRecordInit = false
             return
         }
@@ -131,23 +138,19 @@ class PixelRecorder() {
 
         // 解除映射
         GLES30.glUnmapBuffer(GLES30.GL_PIXEL_PACK_BUFFER)
-        unbindPixelBuffer()
+        changeIndexAndUnbindPBO()
 
         // 交给mRecordHelper录制
         mRecordHelper.onRecord(byteBuffer, mRecordWidth, mRecordHeight, mPixelStride, mRowStride, mLastTimestamp);
     }
 
-    //解绑pbo
-    private fun unbindPixelBuffer() {
-        //解除绑定PBO
+    // 解绑pbo
+    private fun changeIndexAndUnbindPBO() {
+        // 解除绑定PBO
         GLES30.glBindBuffer(GLES30.GL_PIXEL_PACK_BUFFER, 0)
 
-        //交换索引
+        // 交换索引
         mPboIndex = (mPboIndex + 1) % 2
         mPboNewIndex = (mPboNewIndex + 1) % 2
     }
-
-
-
-
 }

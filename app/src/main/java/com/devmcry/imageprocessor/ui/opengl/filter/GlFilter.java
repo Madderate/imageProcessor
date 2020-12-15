@@ -21,6 +21,7 @@ import static android.opengl.GLES30.glUseProgram;
 
 public class GlFilter {
 
+
     public static final String DEFAULT_UNIFORM_SAMPLER = "sTexture";
 
 
@@ -51,6 +52,15 @@ public class GlFilter {
     };
 
 
+
+    protected EFramebufferObject mBufferObject;
+    public EFramebufferObject getBufferObject() {
+        return mBufferObject;
+    }
+
+    public void setBufferObject(EFramebufferObject bufferObject) {
+        mBufferObject = bufferObject;
+    }
 
 
     private static final int FLOAT_SIZE_BYTES = 4;
@@ -106,6 +116,10 @@ public class GlFilter {
         vertexBufferName = 0;
 
         handleMap.clear();
+
+        if (mBufferObject != null) {
+            mBufferObject.release();
+        }
     }
 
     public void draw(final int texName, final EFramebufferObject fbo) {
