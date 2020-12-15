@@ -14,12 +14,6 @@ import com.devmcry.imageprocessor.ui.opengl.util.EglUtil.loadTexture
 class ContentFilter(private val contentBitmap: Bitmap): GlFilter(DEFAULT_VERTEX_SHADER, FRAGMENT_SHADER), FilterInterface {
 
     companion object {
-        val CUBE_DATA = floatArrayOf(
-            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-            1.0f, 1.0f, 0.0f, 1.0f, 0.0f
-        )
 
         const val FRAGMENT_SHADER = """
                 varying highp vec2 vTextureCoord;
@@ -34,13 +28,6 @@ class ContentFilter(private val contentBitmap: Bitmap): GlFilter(DEFAULT_VERTEX_
     }
 
     var contentTextureId = NO_TEXTURE
-
-//    fun setup(cubeData: FloatArray, textureId: Int) {
-////        verticeFragmentData = cubeData
-//        contentTextureId = textureId
-//        setup()
-//    }
-
 
 
     override fun onDraw() {
