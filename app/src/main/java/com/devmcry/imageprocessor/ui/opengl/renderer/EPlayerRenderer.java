@@ -7,11 +7,11 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Surface;
 
-import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter;
 import com.devmcry.imageprocessor.ui.opengl.EPlayerView;
 import com.devmcry.imageprocessor.ui.opengl.filter.AlphaFrameFilter;
-import com.devmcry.imageprocessor.ui.opengl.filter.GlFilter;
+import com.devmcry.imageprocessor.ui.opengl.filter.ContentFilter;
 import com.devmcry.imageprocessor.ui.opengl.filter.GlPreviewFilter;
+import com.devmcry.imageprocessor.ui.opengl.recorder.PixelRecorder;
 import com.devmcry.imageprocessor.ui.opengl.util.EFramebufferObject;
 import com.devmcry.imageprocessor.ui.opengl.util.EglUtil;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -39,7 +39,7 @@ import static com.devmcry.imageprocessor.ui.opengl.util.EglUtil.NO_TEXTURE;
 
 public class EPlayerRenderer extends EFrameBufferObjectRenderer implements SurfaceTexture.OnFrameAvailableListener {
 
-    private static final String TAG = EPlayerRenderer.class.getSimpleName();
+    final private static  String TAG = EPlayerRenderer.class.getSimpleName();
 
     private ESurfaceTexture previewTexture;
     private boolean updateSurface = false;
@@ -60,6 +60,9 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
     private EFramebufferObject videoFrameBufferObject;
     private EFramebufferObject alphaFrameBufferObject;
     private float alphaFrameSourceRatio = 1080 / 1920f;
+
+    // 录制视频最后输出
+    private PixelRecorder pixelRecorder;
 
     private final EPlayerView glPreview;
 
@@ -114,6 +117,8 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
         });
     }
 
+
+
     @Override
     public void onSurfaceCreated(final EGLConfig config) {
         // NO.2 初始化render
@@ -159,6 +164,10 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             updateSurface = false;
         }
 
+
+        pixelRecorder = new PixelRecorder();
+        pixelRecorder.startRecord();
+
         GLES30.glGetIntegerv(GL_MAX_TEXTURE_SIZE, args, 0);
     }
 
@@ -171,9 +180,6 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
 
             contentFilter.setContentTextureId(textureId);
             contentFilter.setup();
-
-//            float[] cubeData = GlFilter.adjustImageScaling(ContentFilter.Companion.getCUBE_DATA(), contentBitmap.getWidth(), contentBitmap.getHeight(), width, height);
-//            contentFilter.setup(cubeData, textureId);
         }
 
         if (alphaFrameFilter != null) {
@@ -182,10 +188,12 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             alphaFrameBufferObject.setup(width, height);
         }
 
+        pixelRecorder.initPixelBuffer(width, height);
+
         // 关键：视频居中
         // 由于视频和图片是顶点对齐，为了将视频居中需要对视频渲染的正交矩阵进行重新运算
-        //  bottom = ratioVideo / ratioImage
-        //  top = 2 + bottom
+        // bottom = ratioVideo / ratioImage
+        // top = 2 + bottom
         // left right bottom top 取值 -1 ～ 1
         float bottom = -alphaFrameSourceRatio * height / width;
         float top = 2 + bottom;
@@ -236,6 +244,10 @@ public class EPlayerRenderer extends EFrameBufferObjectRenderer implements Surfa
             // 将最终视频帧绘制到 fbo 上
             contentFilter.draw(alphaFrameBufferObject.getTexName(), null);
         }
+
+
+        // 录制每一帧
+        pixelRecorder.bindPixelBuffer();
 
         GLES30.glDisable(GLES30.GL_BLEND);
     }

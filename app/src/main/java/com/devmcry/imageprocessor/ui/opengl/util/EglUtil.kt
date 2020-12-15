@@ -69,14 +69,14 @@ object EglUtil {
         return createBuffer(toFloatBuffer(data))
     }
 
-    fun createBuffer(data: FloatBuffer): Int {
+    private fun createBuffer(data: FloatBuffer): Int {
         val buffers = IntArray(1)
         GLES30.glGenBuffers(buffers.size, buffers, 0)
         updateBufferData(buffers[0], data)
         return buffers[0]
     }
 
-    fun toFloatBuffer(data: FloatArray): FloatBuffer {
+    private fun toFloatBuffer(data: FloatArray): FloatBuffer {
         val buffer = ByteBuffer
                 .allocateDirect(data.size * FLOAT_SIZE_BYTES)
                 .order(ByteOrder.nativeOrder())
@@ -85,7 +85,7 @@ object EglUtil {
         return buffer
     }
 
-    fun updateBufferData(bufferName: Int, data: FloatBuffer) {
+    private fun updateBufferData(bufferName: Int, data: FloatBuffer) {
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, bufferName)
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, data.capacity() * FLOAT_SIZE_BYTES, data, GLES30.GL_STATIC_DRAW)
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, 0)
