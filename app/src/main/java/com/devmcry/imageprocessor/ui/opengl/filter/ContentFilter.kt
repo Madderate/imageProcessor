@@ -27,7 +27,7 @@ class ContentFilter(private val contentBitmap: Bitmap): GlFilter(DEFAULT_VERTEX_
                 """
     }
 
-    var contentTextureId = NO_TEXTURE
+    private var contentTextureId = NO_TEXTURE
 
 
     override fun onDraw() {
